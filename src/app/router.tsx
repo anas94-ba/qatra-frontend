@@ -1,5 +1,6 @@
 import { Link, createBrowserRouter } from 'react-router-dom';
 import { authRoutes } from '../features/auth/routes';
+import { publicRoutes } from '../features/public/routes';
 
 function NotFound() {
   return (
@@ -13,6 +14,7 @@ function NotFound() {
 }
 
 export const router = createBrowserRouter([
+  ...publicRoutes,
   ...authRoutes,
   { path: '*', element: <NotFound /> },
 ]);
