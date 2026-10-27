@@ -1,5 +1,6 @@
 import { Link, createBrowserRouter } from 'react-router-dom';
 import { authRoutes } from '../features/auth/routes';
+import { campRoutes } from '../features/camp/routes';
 import { publicRoutes } from '../features/public/routes';
 
 function NotFound() {
@@ -16,5 +17,6 @@ function NotFound() {
 export const router = createBrowserRouter([
   ...publicRoutes,
   ...authRoutes,
+  ...campRoutes,
   { path: '*', element: <NotFound /> },
 ]);
