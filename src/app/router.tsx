@@ -1,4 +1,5 @@
 import { Link, createBrowserRouter } from 'react-router-dom';
+import { adminRoutes } from '../features/admin/routes';
 import { authRoutes } from '../features/auth/routes';
 import { campRoutes } from '../features/camp/routes';
 import { orgRoutes } from '../features/org/routes';
@@ -20,5 +21,6 @@ export const router = createBrowserRouter([
   ...authRoutes,
   ...campRoutes,
   ...orgRoutes,
+  ...adminRoutes,
   { path: '*', element: <NotFound /> },
 ]);
