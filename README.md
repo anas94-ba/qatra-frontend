@@ -21,12 +21,26 @@ npm run dev              # http://localhost:3000
 | `npm test` | اختبارات Vitest |
 | `npm run lint` | فحص TypeScript |
 
+## عنوان الـ API (ملف `.env`)
+كل الإعدادات تُقرأ من **ملف `.env` واحد**، بدون أي معاملات في الأمر:
+```
+VITE_API_URL=https://qatra-api.onrender.com/api
+VITE_TURNSTILE_SITE_KEY=          # اختياري
+```
+- **التطوير:** `npm run dev` يقرأ `.env` تلقائيًا.
+- **Docker:** القيمة **لا تُدمج في الصورة**؛ تُقرأ من بيئة الحاوية عند التشغيل، فنفس الصورة تعمل مع أي عنوان.
+- **استضافة ثابتة (Render Static Site / Netlify / Vercel):** عرّف `VITE_API_URL` في إعدادات البيئة هناك ثم أعد البناء.
+- ترتيب الأولوية: القيمة وقت التشغيل (Docker) ثم قيمة وقت البناء ثم `http://localhost:4000/api`.
+
 ## Docker
 ```bash
-docker build -t qatra-web --build-arg VITE_API_URL=https://api.example.org/api .
-docker run -p 8080:80 qatra-web          # أو: docker compose up --build
+cp .env.example .env            # عدّل VITE_API_URL
+docker build -t qatra-web .
+docker run --env-file .env -p 8080:80 qatra-web
+# أو ببساطة:
+docker compose up --build       # يقرأ .env عبر env_file
 ```
-المتغيرات `VITE_*` تُدمج وقت البناء، فمرّر عنوان الـ API الصحيح كـ build arg.
+لتغيير العنوان لاحقًا: عدّل `.env` وأعد تشغيل الحاوية فقط (بدون إعادة بناء).
 
 ## الهيكل
 ```
@@ -45,7 +59,7 @@ public/         اللوجو والأيقونات
 - كل القوائم مرقّمة (10 عناصر لكل صفحة افتراضيًا).
 - الإشعارات بالـ polling كل 3 دقائق (بدون WebSockets).
 - الـ tokens في `localStorage`؛ الواجهة لا تعرض HTML خامًا لتقليل خطر XSS.
-- CAPTCHA: عيّن `VITE_TURNSTILE_SITE_KEY` (Cloudflare Turnstile) ليظهر في التسجيل؛ بدونه لا يظهر (للتطوير).
+- CAPTCHA: عيّن `VITE_TURNSTILE_SITE_KEY` (Cloudflare Turnstile) في `.env` ليظهر في التسجيل؛ بدونه لا يظهر (للتطوير).
 
 ## استراتيجية الفروع
 `main` مستقر • `develop` للتكامل • `feature/*` فرع لكل ميزة يُدمج بـ PR (`--no-ff`).
