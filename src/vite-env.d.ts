@@ -7,3 +7,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+interface Window {
+  /** Written by /env-config.js (generated at container start in Docker; empty in development) */
+  __ENV__?: { API_URL?: string; TURNSTILE_SITE_KEY?: string };
+}

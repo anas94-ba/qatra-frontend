@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { config } from '../config';
 
 declare global {
   interface Window {
@@ -6,7 +7,7 @@ declare global {
   }
 }
 
-const SITE_KEY: string | undefined = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+const SITE_KEY = config.turnstileSiteKey;
 const SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 /** Cloudflare Turnstile widget. Renders nothing when VITE_TURNSTILE_SITE_KEY is not set (local development). */
