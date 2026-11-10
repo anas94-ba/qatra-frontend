@@ -1,6 +1,7 @@
+import { config } from '../config';
 import { tokenStore } from './tokens';
 
-export const API_URL: string = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api';
+export const API_URL: string = config.apiUrl;
 export const AUTH_LOST_EVENT = 'qatra:auth-lost';
 
 /** Error thrown for every non-2xx response, with the backend message flattened to one string */
