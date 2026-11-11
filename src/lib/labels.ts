@@ -1,4 +1,6 @@
-/** Arabic labels for backend enums, plus the badge tone for each status */
+import { t } from '../i18n';
+
+/** Arabic labels for backend enums (translated when read), plus the badge tone for each status */
 export type Tone = '' | 'ok' | 'warn' | 'danger';
 export interface Label { text: string; tone: Tone }
 
@@ -9,11 +11,15 @@ export const ENTITY_TYPES = [
   { value: 'INITIATIVE', label: 'مبادرة / مبادر' },
 ] as const;
 
-export const ORG_TYPES = ENTITY_TYPES.filter((t) => t.value !== 'CAMP');
+export const ORG_TYPES = ENTITY_TYPES.filter((e) => e.value !== 'CAMP');
 
-export const entityTypeLabel = (v: string): string => ENTITY_TYPES.find((t) => t.value === v)?.label ?? v;
+export const entityTypeLabel = (v: string): string => t(ENTITY_TYPES.find((e) => e.value === v)?.label ?? v);
 
-const make = (map: Record<string, Label>) => (v: string): Label => map[v] ?? { text: v, tone: '' };
+/** Translation happens per call, not at import time, so a language switch is picked up */
+const make = (map: Record<string, Label>) => (v: string): Label => {
+  const label = map[v] ?? { text: v, tone: '' as Tone };
+  return { text: t(label.text), tone: label.tone };
+};
 
 export const deliveryStatus = make({
   PENDING: { text: 'قيد التأكيد', tone: 'warn' },
