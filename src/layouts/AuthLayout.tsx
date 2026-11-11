@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { PageLoader } from '../components/State';
 import { Link, Outlet } from 'react-router-dom';
 
 /** Centered card used by login, registration and the account status pages */
@@ -6,7 +8,7 @@ export function AuthLayout() {
     <div className="auth-page">
       <div className="auth-card stack">
         <Link to="/"><img className="logo" src="/logo.png" alt="قطرة" /></Link>
-        <div className="card"><Outlet /></div>
+        <div className="card"><Suspense fallback={<PageLoader inline />}><Outlet /></Suspense></div>
       </div>
     </div>
   );

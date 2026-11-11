@@ -1,16 +1,18 @@
 import type { RouteObject } from 'react-router-dom';
 import { DashboardLayout, type NavItem } from '../../layouts/DashboardLayout';
 import { RequireRole } from '../auth/RequireRole';
-import { NotificationsPage } from '../notifications/NotificationsPage';
-import { AdminDeliveriesPage } from './AdminDeliveriesPage';
-import { AdminHome } from './AdminHome';
-import { AlgorithmPage } from './AlgorithmPage';
-import { AuditPage } from './AuditPage';
-import { DonationPage } from './DonationPage';
-import { DonorsPage } from './DonorsPage';
-import { EntitiesPage } from './EntitiesPage';
-import { RegistrationsPage } from './RegistrationsPage';
-import { SnapshotsReviewPage } from './SnapshotsReviewPage';
+import { lazyPage } from '../../lib/lazyPage';
+
+const NotificationsPage = lazyPage(() => import('../notifications/NotificationsPage'), 'NotificationsPage');
+const AdminDeliveriesPage = lazyPage(() => import('./AdminDeliveriesPage'), 'AdminDeliveriesPage');
+const AdminHome = lazyPage(() => import('./AdminHome'), 'AdminHome');
+const AlgorithmPage = lazyPage(() => import('./AlgorithmPage'), 'AlgorithmPage');
+const AuditPage = lazyPage(() => import('./AuditPage'), 'AuditPage');
+const DonationPage = lazyPage(() => import('./DonationPage'), 'DonationPage');
+const DonorsPage = lazyPage(() => import('./DonorsPage'), 'DonorsPage');
+const EntitiesPage = lazyPage(() => import('./EntitiesPage'), 'EntitiesPage');
+const RegistrationsPage = lazyPage(() => import('./RegistrationsPage'), 'RegistrationsPage');
+const SnapshotsReviewPage = lazyPage(() => import('./SnapshotsReviewPage'), 'SnapshotsReviewPage');
 
 const nav: NavItem[] = [
   { to: '/admin', label: 'الرئيسية', end: true },

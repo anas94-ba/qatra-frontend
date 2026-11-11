@@ -1,11 +1,13 @@
 import type { RouteObject } from 'react-router-dom';
 import { DashboardLayout, type NavItem } from '../../layouts/DashboardLayout';
 import { RequireRole } from '../auth/RequireRole';
-import { NotificationsPage } from '../notifications/NotificationsPage';
-import { OrgDeliveriesPage } from './DeliveriesPage';
-import { OrgHome } from './OrgHome';
-import { PlanDetailPage } from './PlanDetailPage';
-import { PlansPage } from './PlansPage';
+import { lazyPage } from '../../lib/lazyPage';
+
+const NotificationsPage = lazyPage(() => import('../notifications/NotificationsPage'), 'NotificationsPage');
+const OrgDeliveriesPage = lazyPage(() => import('./DeliveriesPage'), 'OrgDeliveriesPage');
+const OrgHome = lazyPage(() => import('./OrgHome'), 'OrgHome');
+const PlanDetailPage = lazyPage(() => import('./PlanDetailPage'), 'PlanDetailPage');
+const PlansPage = lazyPage(() => import('./PlansPage'), 'PlansPage');
 
 const nav: NavItem[] = [
   { to: '/org', label: 'الرئيسية', end: true },
