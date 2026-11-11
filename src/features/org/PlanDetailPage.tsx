@@ -64,8 +64,20 @@ export function PlanDetailPage() {
     approve.mutate(payload);
   }
 
-  const setEdit = (r: Recommendation, patch: Partial<Edit>) => setEdits((m) => ({ ...m, [r.id]: { liters: String(r.suggestedLiters), reason: '', ...m[r.id], ...patch } }));
-  const next = plan.data ? NEXT[plan.data.status] : null;
+const setEdit = (r: Recommendation, patch: Partial<Edit>) =>
+  setEdits((m) => {
+    const current: Partial<Edit> | undefined = m[r.id];
+    return {
+      ...m,
+      [r.id]: {
+        liters: String(r.suggestedLiters),
+        reason: '',
+        ...current,
+        ...patch,
+      } as Edit,
+    };
+  });
+    const next = plan.data ? NEXT[plan.data.status] : null;
 
   return (
     <div className="stack">
