@@ -15,6 +15,7 @@ import { formatDate } from '../../lib/format';
 import { ENTITY_TYPES, entityTypeLabel, ORG_TYPES, requestStatus } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
 import { REGIONS } from '../auth/registrationForm';
+import { t } from '../../i18n';
 
 type Action = 'reject' | 'hold' | null;
 
@@ -30,54 +31,54 @@ function RequestDetail({ id, onClose }: { id: string; onClose: () => void }) {
 
   const approve = useMutation({
     mutationFn: () => api.post(`/admin/registrations/${id}/approve`, orgType ? { orgType } : {}),
-    onSuccess: done('تم قبول الطلب وإنشاء الجهة'), onError: toast.error,
+    onSuccess: done(t("تم قبول الطلب وإنشاء الجهة")), onError: toast.error,
   });
-  const extra = useMutation({ mutationFn: () => api.post(`/admin/registrations/${id}/extra-attempt`), onSuccess: done('مُنحت محاولة إضافية'), onError: toast.error });
+  const extra = useMutation({ mutationFn: () => api.post(`/admin/registrations/${id}/extra-attempt`), onSuccess: done(t("مُنحت محاولة إضافية")), onError: toast.error });
 
   return (
-    <Modal title="تفاصيل الطلب" onClose={onClose}>
+    <Modal title={t("تفاصيل الطلب")} onClose={onClose}>
       <QueryState loading={query.isLoading} error={query.error}>
         {r && (
           <div className="stack small">
             <div><strong>{r.name}</strong> — {entityTypeLabel(r.entityType)} <Badge label={requestStatus(r.status)} /></div>
-            <div>المسؤول: {r.contactName} • <span className="ltr">{r.phone}</span> • <span className="ltr">{r.email}</span></div>
-            {r.region && <div>المنطقة: {r.region} ({r.lat}, {r.lng})</div>}
+            <div>{t("المسؤول: {0} •", [r.contactName])} <span className="ltr">{r.phone}</span> • <span className="ltr">{r.email}</span></div>
+            {r.region && <div>{t("المنطقة: {0} ({1}, {2})", [r.region, r.lat, r.lng])}</div>}
             {r.description && <div>{r.description}</div>}
             <pre style={{ whiteSpace: 'pre-wrap', direction: 'ltr', background: 'var(--bg)', padding: '.5rem', borderRadius: 8 }}>{JSON.stringify(r.details, null, 2)}</pre>
-            <div>المحاولة {r.attemptCount} (إضافية: {r.extraAttempts})</div>
+            <div>{t("المحاولة {0} (إضافية: {1})", [r.attemptCount, r.extraAttempts])}</div>
             {r.duplicates && r.duplicates.length > 0 && (
-              <div className="notice warn"><strong>تنبيه تكرار:</strong>{r.duplicates.map((d) => <div key={d.id}>{d.name} — {d.reason}</div>)}</div>
+              <div className="notice warn"><strong>{t("تنبيه تكرار:")}</strong>{r.duplicates.map((d) => <div key={d.id}>{d.name} — {d.reason}</div>)}</div>
             )}
             {r.rejectionHistory && r.rejectionHistory.length > 0 && (
-              <div><strong>سجل الرفض:</strong>{r.rejectionHistory.map((h) => <div key={h.attempt}>المحاولة {h.attempt}: {h.reason}</div>)}</div>
+              <div><strong>{t("سجل الرفض:")}</strong>{r.rejectionHistory.map((h) => <div key={h.attempt}>{t("المحاولة {0}: {1}", [h.attempt, h.reason])}</div>)}</div>
             )}
-            {r.internalNote && <div className="notice">ملاحظة داخلية: {r.internalNote}</div>}
+            {r.internalNote && <div className="notice">{t("ملاحظة داخلية: {0}", [r.internalNote])}</div>}
             {r.status === 'PENDING' && (
               <>
                 {r.entityType !== 'CAMP' && (
-                  <SelectField label="تأكيد نوع الجهة" value={orgType} onChange={(e) => setOrgType(e.target.value as OrgType | '')} hint="الافتراضي ما اقترحه المتقدم">
-                    <option value="">كما اقترح المتقدم</option>
-                    {ORG_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  <SelectField label={t("تأكيد نوع الجهة")} value={orgType} onChange={(e) => setOrgType(e.target.value as OrgType | '')} hint={t("الافتراضي ما اقترحه المتقدم")}>
+                    <option value="">{t("كما اقترح المتقدم")}</option>
+                    {ORG_TYPES.map((o) => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
                   </SelectField>
                 )}
                 <div className="row">
-                  <Button loading={approve.isPending} onClick={() => approve.mutate()}>قبول</Button>
-                  <Button variant="danger" onClick={() => setAction('reject')}>رفض</Button>
-                  <Button variant="secondary" onClick={() => setAction('hold')}>إبقاء قيد الاعتماد</Button>
+                  <Button loading={approve.isPending} onClick={() => approve.mutate()}>{t("قبول")}</Button>
+                  <Button variant="danger" onClick={() => setAction('reject')}>{t("رفض")}</Button>
+                  <Button variant="secondary" onClick={() => setAction('hold')}>{t("إبقاء قيد الاعتماد")}</Button>
                 </div>
               </>
             )}
-            {r.status === 'REJECTED' && <Button variant="secondary" loading={extra.isPending} onClick={() => extra.mutate()}>منح محاولة إضافية</Button>}
+            {r.status === 'REJECTED' && <Button variant="secondary" loading={extra.isPending} onClick={() => extra.mutate()}>{t("منح محاولة إضافية")}</Button>}
           </div>
         )}
       </QueryState>
       {action === 'reject' && (
-        <ReasonModal title="رفض الطلب" submitLabel="رفض" danger onClose={() => setAction(null)}
-          onSubmit={(reason) => api.post(`/admin/registrations/${id}/reject`, { reason }).then(done('تم رفض الطلب')).catch((e) => { toast.error(e); throw e; })} />
+        <ReasonModal title={t("رفض الطلب")} submitLabel={t("رفض")} danger onClose={() => setAction(null)}
+          onSubmit={(reason) => api.post(`/admin/registrations/${id}/reject`, { reason }).then(done(t("تم رفض الطلب"))).catch((e) => { toast.error(e); throw e; })} />
       )}
       {action === 'hold' && (
-        <ReasonModal title="إبقاء قيد الاعتماد" label="ملاحظة داخلية (لا تظهر للمتقدم)" submitLabel="حفظ" onClose={() => setAction(null)}
-          onSubmit={(note) => api.post(`/admin/registrations/${id}/hold`, { note }).then(done('حُفظت الملاحظة')).catch((e) => { toast.error(e); throw e; })} />
+        <ReasonModal title={t("إبقاء قيد الاعتماد")} label={t("ملاحظة داخلية (لا تظهر للمتقدم)")} submitLabel={t("حفظ")} onClose={() => setAction(null)}
+          onSubmit={(note) => api.post(`/admin/registrations/${id}/hold`, { note }).then(done(t("حُفظت الملاحظة"))).catch((e) => { toast.error(e); throw e; })} />
       )}
     </Modal>
   );
@@ -96,35 +97,35 @@ function DirectAccountForm({ onClose }: { onClose: () => void }) {
       entityType: type, name: f.name, contactName: f.contactName, email: f.email, phone: f.phone,
       ...(type === 'CAMP' ? { region: f.region, lat: Number(f.lat), lng: Number(f.lng) } : { description: f.description || undefined }),
     }),
-    onSuccess: (r) => { toast.success(r.emailSent ? 'أُنشئ الحساب وأُرسل رابط تعيين كلمة المرور' : 'أُنشئ الحساب لكن تعذّر إرسال البريد'); qc.invalidateQueries({ queryKey: ['admin'] }); onClose(); },
+    onSuccess: (r) => { toast.success(r.emailSent ? t("أُنشئ الحساب وأُرسل رابط تعيين كلمة المرور") : t("أُنشئ الحساب لكن تعذّر إرسال البريد")); qc.invalidateQueries({ queryKey: ['admin'] }); onClose(); },
     onError: toast.error,
   });
   function submit(e: FormEvent) { e.preventDefault(); create.mutate(); }
 
   return (
-    <Modal title="إنشاء حساب جهة مباشرة" onClose={onClose}>
+    <Modal title={t("إنشاء حساب جهة مباشرة")} onClose={onClose}>
       <form onSubmit={submit}>
-        <SelectField label="نوع الجهة" value={type} onChange={(e) => setType(e.target.value as EntityType)}>
-          {ENTITY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+        <SelectField label={t("نوع الجهة")} value={type} onChange={(e) => setType(e.target.value as EntityType)}>
+          {ENTITY_TYPES.map((o) => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
         </SelectField>
-        <TextField label="الاسم" required value={f.name} onChange={set('name')} />
+        <TextField label={t("الاسم")} required value={f.name} onChange={set('name')} />
         {type === 'CAMP' ? (
           <div className="form-grid">
-            <SelectField label="المحافظة" required value={f.region} onChange={set('region')}>
-              <option value="">اختر...</option>{REGIONS.map((r) => <option key={r}>{r}</option>)}
+            <SelectField label={t("المحافظة")} required value={f.region} onChange={set('region')}>
+              <option value="">{t("اختر...")}</option>{REGIONS.map((r) => <option key={r} value={r}>{t(r)}</option>)}
             </SelectField>
-            <TextField label="خط العرض" type="number" step="any" required value={f.lat} onChange={set('lat')} />
-            <TextField label="خط الطول" type="number" step="any" required value={f.lng} onChange={set('lng')} />
+            <TextField label={t("خط العرض")} type="number" step="any" required value={f.lat} onChange={set('lat')} />
+            <TextField label={t("خط الطول")} type="number" step="any" required value={f.lng} onChange={set('lng')} />
           </div>
-        ) : <TextField label="وصف النشاط" value={f.description} onChange={set('description')} />}
+        ) : <TextField label={t("وصف النشاط")} value={f.description} onChange={set('description')} />}
         <div className="form-grid">
-          <TextField label="اسم المسؤول" required value={f.contactName} onChange={set('contactName')} />
-          <TextField label="الهاتف" required dir="ltr" value={f.phone} onChange={set('phone')} />
+          <TextField label={t("اسم المسؤول")} required value={f.contactName} onChange={set('contactName')} />
+          <TextField label={t("الهاتف")} required dir="ltr" value={f.phone} onChange={set('phone')} />
         </div>
-        <TextField label="البريد الإلكتروني" type="email" dir="ltr" required value={f.email} onChange={set('email')} />
+        <TextField label={t("البريد الإلكتروني")} type="email" dir="ltr" required value={f.email} onChange={set('email')} />
         <div className="row">
-          <Button type="submit" loading={create.isPending}>إنشاء</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="submit" loading={create.isPending}>{t("إنشاء")}</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>
@@ -144,14 +145,14 @@ export function RegistrationsPage() {
 
   return (
     <div className="stack">
-      <PageHeader title="طلبات التسجيل" subtitle="تظهر هنا الطلبات التي أكّد أصحابها بريدهم فقط" actions={<Button variant="secondary" onClick={() => setCreating(true)}>إنشاء حساب مباشر</Button>} />
+      <PageHeader title={t("طلبات التسجيل")} subtitle={t("تظهر هنا الطلبات التي أكّد أصحابها بريدهم فقط")} actions={<Button variant="secondary" onClick={() => setCreating(true)}>{t("إنشاء حساب مباشر")}</Button>} />
       <Card>
         <div className="form-grid">
-          <SelectField label="الحالة" value={status} onChange={(e) => { setStatus(e.target.value); reset(); }}>
-            <option value="">الكل</option><option value="PENDING">قيد الاعتماد</option><option value="APPROVED">مقبول</option><option value="REJECTED">مرفوض</option>
+          <SelectField label={t("الحالة")} value={status} onChange={(e) => { setStatus(e.target.value); reset(); }}>
+            <option value="">{t("الكل")}</option><option value="PENDING">{t("قيد الاعتماد")}</option><option value="APPROVED">{t("مقبول")}</option><option value="REJECTED">{t("مرفوض")}</option>
           </SelectField>
-          <SelectField label="النوع" value={entityType} onChange={(e) => { setEntityType(e.target.value); reset(); }}>
-            <option value="">الكل</option>{ENTITY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          <SelectField label={t("النوع")} value={entityType} onChange={(e) => { setEntityType(e.target.value); reset(); }}>
+            <option value="">{t("الكل")}</option>{ENTITY_TYPES.map((o) => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
           </SelectField>
         </div>
         <QueryState loading={query.isLoading} error={query.error}>
@@ -161,12 +162,12 @@ export function RegistrationsPage() {
                 rows={query.data.items}
                 rowKey={(r) => r.id}
                 columns={[
-                  { header: 'الاسم', render: (r) => <>{r.name}{r.duplicates && r.duplicates.length > 0 && <div><span className="badge warn">تكرار محتمل</span></div>}</> },
-                  { header: 'النوع', render: (r) => entityTypeLabel(r.entityType) },
-                  { header: 'التاريخ', render: (r) => formatDate(r.createdAt) },
-                  { header: 'المحاولة', render: (r) => r.attemptCount },
-                  { header: 'الحالة', render: (r) => <Badge label={requestStatus(r.status)} /> },
-                  { header: '', render: (r) => <Button small variant="secondary" onClick={() => setSelected(r.id)}>مراجعة</Button> },
+                  { header: t("الاسم"), render: (r) => <>{r.name}{r.duplicates && r.duplicates.length > 0 && <div><span className="badge warn">{t("تكرار محتمل")}</span></div>}</> },
+                  { header: t("النوع"), render: (r) => entityTypeLabel(r.entityType) },
+                  { header: t("التاريخ"), render: (r) => formatDate(r.createdAt) },
+                  { header: t("المحاولة"), render: (r) => r.attemptCount },
+                  { header: t("الحالة"), render: (r) => <Badge label={requestStatus(r.status)} /> },
+                  { header: '', render: (r) => <Button small variant="secondary" onClick={() => setSelected(r.id)}>{t("مراجعة")}</Button> },
                 ]}
               />
               <Pagination meta={query.data.meta} onPage={setPage} />

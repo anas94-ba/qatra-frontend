@@ -14,6 +14,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatNumber } from '../../lib/format';
 import { reviewStatus } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 export function SnapshotsReviewPage() {
   const toast = useToast();
@@ -25,28 +26,28 @@ export function SnapshotsReviewPage() {
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin'] });
 
   async function approve(s: Snapshot) {
-    try { await api.post(`/admin/snapshots/${s.id}/approve`); toast.success('اعتُمد الـ Snapshot'); refresh(); } catch (e) { toast.error(e); }
+    try { await api.post(`/admin/snapshots/${s.id}/approve`); toast.success(t("اعتُمد الـ Snapshot")); refresh(); } catch (e) { toast.error(e); }
   }
 
   return (
     <div className="stack">
-      <PageHeader title="مراجعة بيانات المخيمات" subtitle="لا تدخل البيانات حساب الخوارزمية قبل اعتمادها" />
+      <PageHeader title={t("مراجعة بيانات المخيمات")} subtitle={t("لا تدخل البيانات حساب الخوارزمية قبل اعتمادها")} />
       <Card>
-        <SelectField label="الحالة" value={status} onChange={(e) => { setStatus(e.target.value); reset(); }}>
-          <option value="">الكل</option><option value="PENDING">قيد المراجعة</option><option value="APPROVED">معتمد</option><option value="REJECTED">مرفوض</option>
+        <SelectField label={t("الحالة")} value={status} onChange={(e) => { setStatus(e.target.value); reset(); }}>
+          <option value="">{t("الكل")}</option><option value="PENDING">{t("قيد المراجعة")}</option><option value="APPROVED">{t("معتمد")}</option><option value="REJECTED">{t("مرفوض")}</option>
         </SelectField>
         <QueryState loading={query.isLoading} error={query.error}>
           {query.data && (
             <>
               <DataTable rows={query.data.items} rowKey={(s) => s.id} columns={[
-                { header: 'المخيم', render: (s) => s.camp?.name },
-                { header: 'التاريخ', render: (s) => formatDate(s.reportedAt) },
-                { header: 'السكان / الأسر', render: (s) => `${formatNumber(s.population)} / ${formatNumber(s.families)}` },
-                { header: 'أطفال / إعاقة', render: (s) => `${formatNumber(s.children)} / ${formatNumber(s.disabled)}` },
-                { header: 'مياه (لتر/يوم)', render: (s) => formatNumber(s.waterReceivedLiters) },
-                { header: 'المصدر', render: (s) => s.source },
-                { header: 'الحالة', render: (s) => <Badge label={reviewStatus(s.reviewStatus)} /> },
-                { header: '', render: (s) => s.reviewStatus === 'PENDING' ? <div className="row"><Button small onClick={() => approve(s)}>اعتماد</Button><Button small variant="danger" onClick={() => setRejecting(s)}>رفض</Button></div> : null },
+                { header: t("المخيم"), render: (s) => s.camp?.name },
+                { header: t("التاريخ"), render: (s) => formatDate(s.reportedAt) },
+                { header: t("السكان / الأسر"), render: (s) => `${formatNumber(s.population)} / ${formatNumber(s.families)}` },
+                { header: t("أطفال / إعاقة"), render: (s) => `${formatNumber(s.children)} / ${formatNumber(s.disabled)}` },
+                { header: t("مياه (لتر/يوم)"), render: (s) => formatNumber(s.waterReceivedLiters) },
+                { header: t("المصدر"), render: (s) => s.source },
+                { header: t("الحالة"), render: (s) => <Badge label={reviewStatus(s.reviewStatus)} /> },
+                { header: '', render: (s) => s.reviewStatus === 'PENDING' ? <div className="row"><Button small onClick={() => approve(s)}>{t("اعتماد")}</Button><Button small variant="danger" onClick={() => setRejecting(s)}>{t("رفض")}</Button></div> : null },
               ]} />
               <Pagination meta={query.data.meta} onPage={setPage} />
             </>
@@ -54,8 +55,8 @@ export function SnapshotsReviewPage() {
         </QueryState>
       </Card>
       {rejecting && (
-        <ReasonModal title="رفض الـ Snapshot" submitLabel="رفض" danger onClose={() => setRejecting(null)}
-          onSubmit={(reason) => api.post(`/admin/snapshots/${rejecting.id}/reject`, { reason }).then(() => { toast.success('رُفض الـ Snapshot'); refresh(); }).catch((e) => { toast.error(e); throw e; })} />
+        <ReasonModal title={t("رفض الـ Snapshot")} submitLabel={t("رفض")} danger onClose={() => setRejecting(null)}
+          onSubmit={(reason) => api.post(`/admin/snapshots/${rejecting.id}/reject`, { reason }).then(() => { toast.success(t("رُفض الـ Snapshot")); refresh(); }).catch((e) => { toast.error(e); throw e; })} />
       )}
     </div>
   );

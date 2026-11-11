@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { api } from '../../api/client';
 import type { PublicDonor } from '../../api/types';
+import { t } from '../../i18n';
 
 /**
  * Donor logos strip: one image per donor, no visible text or amounts. The marquee is pure CSS and pauses on
@@ -16,10 +17,10 @@ export function DonorStrip() {
   const list = animate ? [...data, ...data] : data;
 
   return (
-    <section aria-label="شركاء ومانحون">
+    <section aria-label={t("شركاء ومانحون")}>
       <div className="row between" style={{ marginBottom: '.5rem' }}>
-        <h2 style={{ margin: 0 }}>شكرًا لداعمينا</h2>
-        {animate && <button type="button" className="btn ghost sm" onClick={() => setPaused((p) => !p)}>{paused ? 'تشغيل الحركة' : 'إيقاف الحركة'}</button>}
+        <h2 style={{ margin: 0 }}>{t("شكرًا لداعمينا")}</h2>
+        {animate && <button type="button" className="btn ghost sm" onClick={() => setPaused((p) => !p)}>{paused ? t("تشغيل الحركة") : t("إيقاف الحركة")}</button>}
       </div>
       <div className={`donor-strip ${paused ? 'paused' : ''}`}>
         <div className="donor-track" style={animate ? undefined : { animation: 'none', width: 'auto', justifyContent: 'center', flexWrap: 'wrap' }}>

@@ -4,6 +4,7 @@ import { api } from '../../api/client';
 import { Button } from '../../components/Button';
 import { TextField } from '../../components/Field';
 import { ErrorNotice } from '../../components/State';
+import { t } from '../../i18n';
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -27,17 +28,17 @@ export function ForgotPasswordPage() {
 
   return (
     <form onSubmit={submit}>
-      <h1>نسيت كلمة المرور</h1>
+      <h1>{t("نسيت كلمة المرور")}</h1>
       {error != null && <ErrorNotice error={error} />}
       {message ? (
         <div className="notice ok">{message}</div>
       ) : (
         <>
-          <TextField label="البريد الإلكتروني" type="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Button type="submit" loading={busy} style={{ width: '100%' }}>إرسال رابط إعادة التعيين</Button>
+          <TextField label={t("البريد الإلكتروني")} type="email" dir="ltr" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Button type="submit" loading={busy} style={{ width: '100%' }}>{t("إرسال رابط إعادة التعيين")}</Button>
         </>
       )}
-      <p style={{ marginTop: '1rem' }}><Link to="/login">العودة لتسجيل الدخول</Link></p>
+      <p style={{ marginTop: '1rem' }}><Link to="/login">{t("العودة لتسجيل الدخول")}</Link></p>
     </form>
   );
 }

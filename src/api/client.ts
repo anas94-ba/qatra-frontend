@@ -1,5 +1,6 @@
 import { config } from '../config';
 import { tokenStore } from './tokens';
+import { t } from '../i18n';
 
 export const API_URL: string = config.apiUrl;
 export const AUTH_LOST_EVENT = 'qatra:auth-lost';
@@ -24,11 +25,11 @@ export function buildQuery(params?: Query): string {
 
 function messageOf(status: number, payload: unknown): string {
   const p = payload as { message?: string | string[]; errors?: string[] } | null;
-  if (p?.errors?.length) return p.errors.join(' • ');
-  if (Array.isArray(p?.message)) return p.message.join(' • ');
-  if (typeof p?.message === 'string') return p.message;
-  if (status === 429) return 'محاولات كثيرة، حاول لاحقًا';
-  return 'حدث خطأ غير متوقع';
+  if (p?.errors?.length) return p.errors.map((e) => t(e)).join(' • ');
+  if (Array.isArray(p?.message)) return p.message.map((m) => t(m)).join(' • ');
+  if (typeof p?.message === 'string') return t(p.message);
+  if (status === 429) return t("محاولات كثيرة، حاول لاحقًا");
+  return t("حدث خطأ غير متوقع");
 }
 
 let refreshing: Promise<boolean> | null = null;
@@ -87,7 +88,7 @@ function safeJson(text: string): unknown {
 export async function downloadCsv(path: string, query: Query, filename: string): Promise<void> {
   let res = await send(path, { query });
   if (res.status === 401 && (await refreshTokens())) res = await send(path, { query });
-  if (!res.ok) throw new ApiError(res.status, 'تعذّر تصدير الملف');
+  if (!res.ok) throw new ApiError(res.status, t("تعذّر تصدير الملف"));
   const url = URL.createObjectURL(await res.blob());
   const a = Object.assign(document.createElement('a'), { href: url, download: filename });
   a.click();

@@ -14,6 +14,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatLiters, todayInGaza } from '../../lib/format';
 import { deliveryStatus } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 function DeliveryForm({ onClose }: { onClose: () => void }) {
   const toast = useToast();
@@ -30,7 +31,7 @@ function DeliveryForm({ onClose }: { onClose: () => void }) {
   const create = useMutation({
     mutationFn: () => api.post<Delivery>('/org/deliveries', { planId, campId: f.campId, sentLiters: Number(f.sentLiters), sentAt: f.sentAt, executor: f.executor, proofUrl: f.proofUrl || undefined }),
     onSuccess: (d) => {
-      toast.success(d.warnings?.length ? `أُنشئت الدفعة. تنبيه: ${d.warnings[0]}` : 'أُنشئت الدفعة وأُرسل إشعار للمخيم');
+      toast.success(d.warnings?.length ? `أُنشئت الدفعة. تنبيه: ${d.warnings[0]}` : t("أُنشئت الدفعة وأُرسل إشعار للمخيم"));
       qc.invalidateQueries({ queryKey: ['org'] });
       onClose();
     },
@@ -57,25 +58,25 @@ function DeliveryForm({ onClose }: { onClose: () => void }) {
   function submit(ev: FormEvent) { ev.preventDefault(); create.mutate(); }
 
   return (
-    <Modal title="دفعة جديدة" onClose={onClose}>
+    <Modal title={t("دفعة جديدة")} onClose={onClose}>
       <form onSubmit={submit}>
-        <SelectField label="الخطة" required value={planId} onChange={(e) => { setPlanId(e.target.value); setF({ ...f, campId: '' }); }} hint={!plans.isLoading && !usable.length ? 'لا توجد خطط معتمدة بعد' : undefined}>
-          <option value="">اختر...</option>
+        <SelectField label={t("الخطة")} required value={planId} onChange={(e) => { setPlanId(e.target.value); setF({ ...f, campId: '' }); }} hint={!plans.isLoading && !usable.length ? t("لا توجد خطط معتمدة بعد") : undefined}>
+          <option value="">{t("اختر...")}</option>
           {usable.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
         </SelectField>
-        <SelectField label="المخيم" required value={f.campId} onChange={(e) => setF({ ...f, campId: e.target.value })} disabled={!planId}>
-          <option value="">اختر...</option>
+        <SelectField label={t("المخيم")} required value={f.campId} onChange={(e) => setF({ ...f, campId: e.target.value })} disabled={!planId}>
+          <option value="">{t("اختر...")}</option>
           {plan.data?.planCamps?.filter((c) => c.camp.status === 'ACTIVE').map((c) => <option key={c.campId} value={c.campId}>{c.camp.name}</option>)}
         </SelectField>
         <div className="form-grid">
-          <TextField label="الكمية (لتر)" type="number" min={1} required value={f.sentLiters} onChange={(e) => setF({ ...f, sentLiters: e.target.value })} />
-          <TextField label="تاريخ الدفعة" type="date" max={todayInGaza()} required value={f.sentAt} onChange={(e) => setF({ ...f, sentAt: e.target.value })} hint="اليوم أو قبله" />
+          <TextField label={t("الكمية (لتر)")} type="number" min={1} required value={f.sentLiters} onChange={(e) => setF({ ...f, sentLiters: e.target.value })} />
+          <TextField label={t("تاريخ الدفعة")} type="date" max={todayInGaza()} required value={f.sentAt} onChange={(e) => setF({ ...f, sentAt: e.target.value })} hint={t("اليوم أو قبله")} />
         </div>
-        <TextField label="الجهة المنفذة" required value={f.executor} onChange={(e) => setF({ ...f, executor: e.target.value })} />
-        <TextField label="إثبات التسليم (اختياري)" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={upload} hint={uploading ? 'جارٍ الرفع...' : f.proofUrl ? 'تم رفع الإثبات' : 'jpg أو png أو webp أو pdf، حتى 5 ميغابايت'} />
+        <TextField label={t("الجهة المنفذة")} required value={f.executor} onChange={(e) => setF({ ...f, executor: e.target.value })} />
+        <TextField label={t("إثبات التسليم (اختياري)")} type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={upload} hint={uploading ? t("جارٍ الرفع...") : f.proofUrl ? t("تم رفع الإثبات") : t("jpg أو png أو webp أو pdf، حتى 5 ميغابايت")} />
         <div className="row">
-          <Button type="submit" loading={create.isPending} disabled={uploading}>إرسال للمخيم</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="submit" loading={create.isPending} disabled={uploading}>{t("إرسال للمخيم")}</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>
@@ -92,24 +93,24 @@ export function OrgDeliveriesPage() {
 
   const cancel = useMutation({
     mutationFn: (id: string) => api.post(`/org/deliveries/${id}/cancel`),
-    onSuccess: () => { toast.success('أُلغيت الدفعة'); qc.invalidateQueries({ queryKey: ['org'] }); },
+    onSuccess: () => { toast.success(t("أُلغيت الدفعة")); qc.invalidateQueries({ queryKey: ['org'] }); },
     onError: toast.error,
   });
 
   return (
     <div className="stack">
       <PageHeader
-        title="الدفعات الصادرة"
+        title={t("الدفعات الصادرة")}
         actions={
           <div className="row">
-            <Button variant="secondary" small onClick={() => downloadCsv('/org/deliveries/export', { status }, 'outgoing-deliveries.csv').catch(toast.error)}>تصدير CSV</Button>
-            <Button onClick={() => setOpen(true)}>دفعة جديدة</Button>
+            <Button variant="secondary" small onClick={() => downloadCsv('/org/deliveries/export', { status }, 'outgoing-deliveries.csv').catch(toast.error)}>{t("تصدير CSV")}</Button>
+            <Button onClick={() => setOpen(true)}>{t("دفعة جديدة")}</Button>
           </div>
         }
       />
       <Card>
-        <SelectField label="الحالة" value={status} onChange={(e) => { setStatus(e.target.value as DeliveryStatus | ''); reset(); }}>
-          <option value="">الكل</option>
+        <SelectField label={t("الحالة")} value={status} onChange={(e) => { setStatus(e.target.value as DeliveryStatus | ''); reset(); }}>
+          <option value="">{t("الكل")}</option>
           {(['PENDING', 'CONFIRMED', 'CONFIRMED_DIFF', 'REJECTED', 'CANCELLED'] as const).map((s) => <option key={s} value={s}>{deliveryStatus(s).text}</option>)}
         </SelectField>
         <QueryState loading={query.isLoading} error={query.error}>
@@ -119,13 +120,13 @@ export function OrgDeliveriesPage() {
                 rows={query.data.items}
                 rowKey={(d) => d.id}
                 columns={[
-                  { header: 'التاريخ', render: (d) => formatDate(d.sentAt) },
-                  { header: 'المخيم', render: (d) => d.to.name },
-                  { header: 'الخطة', render: (d) => d.plan?.name ?? '—' },
-                  { header: 'المرسل', render: (d) => formatLiters(d.sentLiters) },
-                  { header: 'المستلم', render: (d) => formatLiters(d.receivedLiters) },
-                  { header: 'الحالة', render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div className="small muted">مجمّدة</div>}{d.decisionNote && <div className="small muted">{d.decisionNote}</div>}</> },
-                  { header: 'إجراء', render: (d) => d.status === 'PENDING' && !d.frozen ? <Button small variant="secondary" onClick={() => cancel.mutate(d.id)}>إلغاء</Button> : null },
+                  { header: t("التاريخ"), render: (d) => formatDate(d.sentAt) },
+                  { header: t("المخيم"), render: (d) => d.to.name },
+                  { header: t("الخطة"), render: (d) => d.plan?.name ?? '—' },
+                  { header: t("المرسل"), render: (d) => formatLiters(d.sentLiters) },
+                  { header: t("المستلم"), render: (d) => formatLiters(d.receivedLiters) },
+                  { header: t("الحالة"), render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div className="small muted">{t("مجمّدة")}</div>}{d.decisionNote && <div className="small muted">{d.decisionNote}</div>}</> },
+                  { header: t("إجراء"), render: (d) => d.status === 'PENDING' && !d.frozen ? <Button small variant="secondary" onClick={() => cancel.mutate(d.id)}>{t("إلغاء")}</Button> : null },
                 ]}
               />
               <Pagination meta={query.data.meta} onPage={setPage} />

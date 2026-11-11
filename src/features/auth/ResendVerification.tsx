@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { api } from '../../api/client';
 import { Button } from '../../components/Button';
 import { useToast } from '../../components/Toast';
+import { t } from '../../i18n';
 
 /** "Resend verification link" button; the API always answers with a generic message */
 export function ResendVerification({ email }: { email: string }) {
@@ -20,5 +21,5 @@ export function ResendVerification({ email }: { email: string }) {
     }
   }
 
-  return <Button variant="secondary" loading={busy} onClick={resend}>إعادة إرسال رابط التأكيد</Button>;
+  return <Button variant="secondary" loading={busy} onClick={resend}>{t("إعادة إرسال رابط التأكيد")}</Button>;
 }

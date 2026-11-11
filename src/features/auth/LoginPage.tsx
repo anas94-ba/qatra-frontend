@@ -4,6 +4,7 @@ import { Button } from '../../components/Button';
 import { TextField } from '../../components/Field';
 import { ErrorNotice } from '../../components/State';
 import { landingPath, useAuth } from './AuthContext';
+import { t } from '../../i18n';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -31,16 +32,16 @@ export function LoginPage() {
 
   return (
     <form onSubmit={submit}>
-      <h1>تسجيل الدخول</h1>
+      <h1>{t("تسجيل الدخول")}</h1>
       {error != null && <ErrorNotice error={error} />}
       <div style={{ marginTop: '1rem' }}>
-        <TextField label="البريد الإلكتروني" type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <TextField label="كلمة المرور" type="password" dir="ltr" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <TextField label={t("البريد الإلكتروني")} type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField label={t("كلمة المرور")} type="password" dir="ltr" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
       </div>
-      <Button type="submit" loading={busy} style={{ width: '100%' }}>دخول</Button>
+      <Button type="submit" loading={busy} style={{ width: '100%' }}>{t("دخول")}</Button>
       <div className="row between small" style={{ marginTop: '1rem' }}>
-        <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
-        <Link to="/register">تسجيل جديد</Link>
+        <Link to="/forgot-password">{t("نسيت كلمة المرور؟")}</Link>
+        <Link to="/register">{t("تسجيل جديد")}</Link>
       </div>
     </form>
   );

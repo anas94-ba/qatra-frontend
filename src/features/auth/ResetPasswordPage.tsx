@@ -4,6 +4,7 @@ import { api } from '../../api/client';
 import { Button } from '../../components/Button';
 import { TextField } from '../../components/Field';
 import { ErrorNotice } from '../../components/State';
+import { t } from '../../i18n';
 
 /** Serves both "forgot password" links and the set-password link for admin-created accounts */
 export function ResetPasswordPage() {
@@ -28,21 +29,21 @@ export function ResetPasswordPage() {
     }
   }
 
-  if (!token) return <div className="notice danger">الرابط غير صالح</div>;
+  if (!token) return <div className="notice danger">{t("الرابط غير صالح")}</div>;
   return (
     <form onSubmit={submit}>
-      <h1>تعيين كلمة المرور</h1>
+      <h1>{t("تعيين كلمة المرور")}</h1>
       {error != null && <ErrorNotice error={error} />}
       {message ? (
         <div className="notice ok">{message}</div>
       ) : (
         <>
-          <TextField label="كلمة المرور الجديدة" type="password" dir="ltr" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
-          <TextField label="تأكيد كلمة المرور" type="password" dir="ltr" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
-          <Button type="submit" loading={busy} style={{ width: '100%' }}>حفظ</Button>
+          <TextField label={t("كلمة المرور الجديدة")} type="password" dir="ltr" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <TextField label={t("تأكيد كلمة المرور")} type="password" dir="ltr" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <Button type="submit" loading={busy} style={{ width: '100%' }}>{t("حفظ")}</Button>
         </>
       )}
-      <p style={{ marginTop: '1rem' }}><Link to="/login">تسجيل الدخول</Link></p>
+      <p style={{ marginTop: '1rem' }}><Link to="/login">{t("تسجيل الدخول")}</Link></p>
     </form>
   );
 }

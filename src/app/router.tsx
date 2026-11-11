@@ -4,13 +4,14 @@ import { authRoutes } from '../features/auth/routes';
 import { campRoutes } from '../features/camp/routes';
 import { orgRoutes } from '../features/org/routes';
 import { publicRoutes } from '../features/public/routes';
+import { t } from '../i18n';
 
 function NotFound() {
   return (
     <div className="auth-page">
       <div className="card" style={{ textAlign: 'center' }}>
-        <h1>الصفحة غير موجودة</h1>
-        <Link to="/">العودة للرئيسية</Link>
+        <h1>{t("الصفحة غير موجودة")}</h1>
+        <Link to="/">{t("العودة للرئيسية")}</Link>
       </div>
     </div>
   );

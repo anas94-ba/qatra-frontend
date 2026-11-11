@@ -15,6 +15,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatLiters } from '../../lib/format';
 import { deliveryStatus, entityTypeLabel } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 /** Confirm with the same quantity, or with a different quantity plus a mandatory reason */
 function ConfirmModal({ delivery, onClose, onDone }: { delivery: Delivery; onClose: () => void; onDone: () => void }) {
@@ -25,21 +26,21 @@ function ConfirmModal({ delivery, onClose, onDone }: { delivery: Delivery; onClo
 
   const confirm = useMutation({
     mutationFn: () => api.post(`/camp/deliveries/${delivery.id}/confirm`, { receivedLiters: Number(received), reason: differs ? reason : undefined }),
-    onSuccess: () => { toast.success('تم تسجيل الاستلام'); onDone(); onClose(); },
+    onSuccess: () => { toast.success(t("تم تسجيل الاستلام")); onDone(); onClose(); },
     onError: toast.error,
   });
 
   function submit(e: FormEvent) { e.preventDefault(); confirm.mutate(); }
 
   return (
-    <Modal title="تأكيد الاستلام" onClose={onClose}>
+    <Modal title={t("تأكيد الاستلام")} onClose={onClose}>
       <form onSubmit={submit}>
-        <p>الكمية المرسلة: <strong>{formatLiters(delivery.sentLiters)}</strong></p>
-        <TextField label="الكمية المستلمة فعليًا (لتر)" type="number" min={0} required value={received} onChange={(e) => setReceived(e.target.value)} />
-        {differs && <TextArea label="سبب الاختلاف" required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />}
+        <p>{t("الكمية المرسلة:")} <strong>{formatLiters(delivery.sentLiters)}</strong></p>
+        <TextField label={t("الكمية المستلمة فعليًا (لتر)")} type="number" min={0} required value={received} onChange={(e) => setReceived(e.target.value)} />
+        {differs && <TextArea label={t("سبب الاختلاف")} required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />}
         <div className="row">
-          <Button type="submit" loading={confirm.isPending}>{differs ? 'تأكيد بفرق' : 'تأكيد الاستلام'}</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="submit" loading={confirm.isPending}>{differs ? t("تأكيد بفرق") : t("تأكيد الاستلام")}</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>
@@ -61,12 +62,12 @@ export function CampDeliveriesPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="الدفعات الواردة"
-        actions={<Button variant="secondary" small onClick={() => downloadCsv('/camp/deliveries/export', { status }, 'incoming-deliveries.csv').catch(toast.error)}>تصدير CSV</Button>}
+        title={t("الدفعات الواردة")}
+        actions={<Button variant="secondary" small onClick={() => downloadCsv('/camp/deliveries/export', { status }, 'incoming-deliveries.csv').catch(toast.error)}>{t("تصدير CSV")}</Button>}
       />
       <Card>
-        <SelectField label="الحالة" value={status} onChange={(e) => { setParams(e.target.value ? { status: e.target.value } : {}); reset(); }}>
-          <option value="">الكل</option>
+        <SelectField label={t("الحالة")} value={status} onChange={(e) => { setParams(e.target.value ? { status: e.target.value } : {}); reset(); }}>
+          <option value="">{t("الكل")}</option>
           {(['PENDING', 'CONFIRMED', 'CONFIRMED_DIFF', 'REJECTED', 'CANCELLED'] as const).map((s) => <option key={s} value={s}>{deliveryStatus(s).text}</option>)}
         </SelectField>
         <QueryState loading={query.isLoading} error={query.error}>
@@ -76,21 +77,21 @@ export function CampDeliveriesPage() {
                 rows={query.data.items}
                 rowKey={(d) => d.id}
                 columns={[
-                  { header: 'التاريخ', render: (d) => formatDate(d.sentAt) },
-                  { header: 'من', render: (d) => <>{d.from.name}<div className="small muted">{entityTypeLabel(d.from.orgType)}</div></> },
-                  { header: 'الخطة', render: (d) => d.plan?.name ?? '—' },
-                  { header: 'المرسل', render: (d) => formatLiters(d.sentLiters) },
-                  { header: 'المستلم', render: (d) => formatLiters(d.receivedLiters) },
-                  { header: 'الجهة المنفذة', render: (d) => d.executor },
-                  { header: 'الحالة', render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div className="small muted">مجمّدة</div>}</> },
+                  { header: t("التاريخ"), render: (d) => formatDate(d.sentAt) },
+                  { header: t("من"), render: (d) => <>{d.from.name}<div className="small muted">{entityTypeLabel(d.from.orgType)}</div></> },
+                  { header: t("الخطة"), render: (d) => d.plan?.name ?? '—' },
+                  { header: t("المرسل"), render: (d) => formatLiters(d.sentLiters) },
+                  { header: t("المستلم"), render: (d) => formatLiters(d.receivedLiters) },
+                  { header: t("الجهة المنفذة"), render: (d) => d.executor },
+                  { header: t("الحالة"), render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div className="small muted">{t("مجمّدة")}</div>}</> },
                   {
-                    header: 'إجراء',
+                    header: t("إجراء"),
                     render: (d) => d.status === 'PENDING' && !d.frozen ? (
                       <div className="row">
-                        <Button small onClick={() => setConfirming(d)}>قبول</Button>
-                        <Button small variant="danger" onClick={() => setRejecting(d)}>رفض</Button>
+                        <Button small onClick={() => setConfirming(d)}>{t("قبول")}</Button>
+                        <Button small variant="danger" onClick={() => setRejecting(d)}>{t("رفض")}</Button>
                       </div>
-                    ) : d.proofUrl ? <a href={d.proofUrl} target="_blank" rel="noopener noreferrer">الإثبات</a> : null,
+                    ) : d.proofUrl ? <a href={d.proofUrl} target="_blank" rel="noopener noreferrer">{t("الإثبات")}</a> : null,
                   },
                 ]}
               />
@@ -102,9 +103,9 @@ export function CampDeliveriesPage() {
       {confirming && <ConfirmModal delivery={confirming} onClose={() => setConfirming(null)} onDone={refresh} />}
       {rejecting && (
         <ReasonModal
-          title="رفض الدفعة" submitLabel="رفض" danger
+          title={t("رفض الدفعة")} submitLabel={t("رفض")} danger
           onClose={() => setRejecting(null)}
-          onSubmit={(reason) => api.post(`/camp/deliveries/${rejecting.id}/reject`, { reason }).then(() => { toast.success('تم رفض الدفعة'); refresh(); }).catch((e) => { toast.error(e); throw e; })}
+          onSubmit={(reason) => api.post(`/camp/deliveries/${rejecting.id}/reject`, { reason }).then(() => { toast.success(t("تم رفض الدفعة")); refresh(); }).catch((e) => { toast.error(e); throw e; })}
         />
       )}
     </div>

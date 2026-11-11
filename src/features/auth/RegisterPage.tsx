@@ -6,9 +6,10 @@ import { Button } from '../../components/Button';
 import { Captcha } from '../../components/Captcha';
 import { TextField } from '../../components/Field';
 import { ErrorNotice } from '../../components/State';
-import { ENTITY_TYPES } from '../../lib/labels';
+import { ENTITY_TYPES, entityTypeLabel } from '../../lib/labels';
 import { ResendVerification } from './ResendVerification';
 import { emptyValues, EntityFields, toPayload, type EntityValues } from './registrationForm';
+import { t } from '../../i18n';
 
 export function RegisterPage() {
   const [type, setType] = useState<EntityType | null>(null);
@@ -21,7 +22,7 @@ export function RegisterPage() {
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<{ emailSent: boolean } | null>(null);
-  const onToken = useCallback((t: string) => setCaptchaToken(t), []);
+  const onToken = useCallback((token: string) => setCaptchaToken(token), []);
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -44,11 +45,11 @@ export function RegisterPage() {
   if (done) {
     return (
       <div className="stack">
-        <h1>تم إنشاء الحساب</h1>
-        <div className="notice ok">أكّد بريدك الإلكتروني عبر الرابط الذي أُرسل إليك ليدخل طلبك قائمة مراجعة الأدمن.</div>
-        {!done.emailSent && <div className="notice warn">تعذّر إرسال البريد حاليًا، يمكنك إعادة الإرسال أدناه.</div>}
+        <h1>{t("تم إنشاء الحساب")}</h1>
+        <div className="notice ok">{t("أكّد بريدك الإلكتروني عبر الرابط الذي أُرسل إليك ليدخل طلبك قائمة مراجعة الأدمن.")}</div>
+        {!done.emailSent && <div className="notice warn">{t("تعذّر إرسال البريد حاليًا، يمكنك إعادة الإرسال أدناه.")}</div>}
         <ResendVerification email={email} />
-        <Link to="/login">الذهاب لتسجيل الدخول</Link>
+        <Link to="/login">{t("الذهاب لتسجيل الدخول")}</Link>
       </div>
     );
   }
@@ -56,16 +57,16 @@ export function RegisterPage() {
   if (!type) {
     return (
       <div className="stack">
-        <h1>تسجيل جديد</h1>
-        <p className="muted">اختر نوع الجهة التي تسجّلها:</p>
+        <h1>{t("تسجيل جديد")}</h1>
+        <p className="muted">{t("اختر نوع الجهة التي تسجّلها:")}</p>
         <div className="grid cols-2">
-          {ENTITY_TYPES.map((t) => (
-            <button key={t.value} type="button" className="card" style={{ cursor: 'pointer', font: 'inherit' }} onClick={() => setType(t.value)}>
-              <strong>{t.label}</strong>
+          {ENTITY_TYPES.map((o) => (
+            <button key={o.value} type="button" className="card" style={{ cursor: 'pointer', font: 'inherit' }} onClick={() => setType(o.value)}>
+              <strong>{t(o.label)}</strong>
             </button>
           ))}
         </div>
-        <Link to="/login" className="small">لدي حساب بالفعل</Link>
+        <Link to="/login" className="small">{t("لدي حساب بالفعل")}</Link>
       </div>
     );
   }
@@ -73,23 +74,23 @@ export function RegisterPage() {
   return (
     <form onSubmit={submit}>
       <div className="row between">
-        <h1>تسجيل {ENTITY_TYPES.find((t) => t.value === type)?.label}</h1>
-        <Button type="button" variant="ghost" small onClick={() => setType(null)}>تغيير النوع</Button>
+        <h1>{t("تسجيل {0}", [t(entityTypeLabel(type))])}</h1>
+        <Button type="button" variant="ghost" small onClick={() => setType(null)}>{t("تغيير النوع")}</Button>
       </div>
       {error != null && <ErrorNotice error={error} />}
       <div style={{ marginTop: '1rem' }}>
         <EntityFields type={type} values={values} onChange={(patch) => setValues((v) => ({ ...v, ...patch }))} />
-        <TextField label="البريد الإلكتروني" type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <TextField label={t("البريد الإلكتروني")} type="email" dir="ltr" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <div className="form-grid">
-          <TextField label="كلمة المرور" type="password" dir="ltr" autoComplete="new-password" required minLength={8} hint="8 أحرف على الأقل، بحروف وأرقام" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <TextField label="تأكيد كلمة المرور" type="password" dir="ltr" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <TextField label={t("كلمة المرور")} type="password" dir="ltr" autoComplete="new-password" required minLength={8} hint={t("8 أحرف على الأقل، بحروف وأرقام")} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <TextField label={t("تأكيد كلمة المرور")} type="password" dir="ltr" autoComplete="new-password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} />
         </div>
         <label className="checkbox">
           <input type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} required />
-          <span>أوافق على سياسة الخصوصية</span>
+          <span>{t("أوافق على سياسة الخصوصية")}</span>
         </label>
         <Captcha onToken={onToken} />
-        <Button type="submit" loading={busy} style={{ width: '100%' }}>إنشاء الحساب</Button>
+        <Button type="submit" loading={busy} style={{ width: '100%' }}>{t("إنشاء الحساب")}</Button>
       </div>
     </form>
   );
