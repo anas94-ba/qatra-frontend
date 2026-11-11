@@ -7,6 +7,7 @@ import { Card, Stat } from '../../components/Card';
 import { Empty, ErrorNotice, Spinner } from '../../components/State';
 import { currentMonth, formatDateTime, formatLiters, formatNumber } from '../../lib/format';
 import { DonorStrip } from './DonorStrip';
+import { HeroImage } from './HeroImage';
 
 const PublicMap = lazy(() => import('./PublicMap'));
 
@@ -19,14 +20,16 @@ export function HomePage() {
   return (
     <>
       <section className="hero">
-        <div className="container stack">
-          <img src="/logo.png" alt="" style={{ height: 88 }} />
-          <h1>قطرة: توزيع المياه بحسب الاحتياج</h1>
-          <p>منصة تنسّق توزيع مياه الشرب المفلترة على مخيمات غزة. تقترح الخوارزمية، وتقرّر المؤسسة، ويؤكد مدير المخيم الاستلام.</p>
-          <div className="row">
-            <ButtonLink to="/register" variant="secondary">سجّل جهتك</ButtonLink>
-            <ButtonLink to="/donate">تبرّع</ButtonLink>
+        <div className="container hero-grid">
+          <div className="hero-copy stack">
+            <h1>قطرة: توزيع المياه بحسب الاحتياج</h1>
+            <p>منصة تنسّق توزيع مياه الشرب المفلترة على مخيمات غزة. تقترح الخوارزمية، وتقرّر المؤسسة، ويؤكد مدير المخيم الاستلام.</p>
+            <div className="row">
+              <ButtonLink to="/register" variant="secondary">سجّل جهتك</ButtonLink>
+              <ButtonLink to="/donate">تبرّع</ButtonLink>
+            </div>
           </div>
+          <HeroImage />
         </div>
       </section>
 
