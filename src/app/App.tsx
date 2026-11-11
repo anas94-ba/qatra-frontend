@@ -1,6 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
+import { PageLoader } from '../components/State';
 import { ToastProvider } from '../components/Toast';
+import { TopProgress } from '../components/TopProgress';
 import { AuthProvider } from '../features/auth/AuthContext';
 import { router } from './router';
 
@@ -13,7 +16,10 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <TopProgress />
+          <Suspense fallback={<PageLoader />}>
+            <RouterProvider router={router} />
+          </Suspense>
         </AuthProvider>
       </ToastProvider>
     </QueryClientProvider>

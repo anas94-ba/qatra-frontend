@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { PageLoader } from '../components/State';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../features/auth/AuthContext';
 import { NotificationBell } from '../features/notifications/NotificationBell';
@@ -32,7 +34,7 @@ export function DashboardLayout({ items }: { items: NavItem[] }) {
             <Button variant="secondary" small onClick={signOut}>خروج</Button>
           </div>
         </header>
-        <main className="dash-content"><Outlet /></main>
+        <main className="dash-content"><Suspense fallback={<PageLoader inline />}><Outlet /></Suspense></main>
       </div>
     </div>
   );

@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+import { PageLoader } from '../components/State';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { homeFor, useAuth } from '../features/auth/AuthContext';
 import { ButtonLink } from '../components/Button';
@@ -30,7 +32,7 @@ export function PublicLayout() {
           </nav>
         </div>
       </header>
-      <main><Outlet /></main>
+      <main><Suspense fallback={<PageLoader inline />}><Outlet /></Suspense></main>
       <footer className="site-footer">
         <div className="container">
           <p style={{ margin: 0 }}>

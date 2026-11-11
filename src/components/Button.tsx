@@ -12,8 +12,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 export function Button({ variant = 'primary', small, loading, disabled, children, ...rest }: ButtonProps) {
   return (
-    <button className={cls(variant, small)} disabled={disabled || loading} {...rest}>
-      {loading ? '...' : children}
+    <button className={cls(variant, small)} disabled={disabled || loading} aria-busy={loading || undefined} {...rest}>
+      {loading && <span className="btn-spinner" aria-hidden="true" />}
+      {children}
     </button>
   );
 }

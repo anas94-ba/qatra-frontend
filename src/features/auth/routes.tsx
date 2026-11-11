@@ -1,12 +1,17 @@
 import type { RouteObject } from 'react-router-dom';
 import { AuthLayout } from '../../layouts/AuthLayout';
-import { ForgotPasswordPage } from './ForgotPasswordPage';
-import { LoginPage } from './LoginPage';
-import { RegisterPage } from './RegisterPage';
 import { RequireStatus } from './RequireRole';
-import { ResetPasswordPage } from './ResetPasswordPage';
-import { PendingStatusPage, RejectedStatusPage, SuspendedStatusPage, VerifyStatusPage } from './StatusPages';
-import { VerifyEmailPage } from './VerifyEmailPage';
+import { lazyPage } from '../../lib/lazyPage';
+
+const ForgotPasswordPage = lazyPage(() => import('./ForgotPasswordPage'), 'ForgotPasswordPage');
+const LoginPage = lazyPage(() => import('./LoginPage'), 'LoginPage');
+const RegisterPage = lazyPage(() => import('./RegisterPage'), 'RegisterPage');
+const ResetPasswordPage = lazyPage(() => import('./ResetPasswordPage'), 'ResetPasswordPage');
+const PendingStatusPage = lazyPage(() => import('./StatusPages'), 'PendingStatusPage');
+const RejectedStatusPage = lazyPage(() => import('./StatusPages'), 'RejectedStatusPage');
+const SuspendedStatusPage = lazyPage(() => import('./StatusPages'), 'SuspendedStatusPage');
+const VerifyStatusPage = lazyPage(() => import('./StatusPages'), 'VerifyStatusPage');
+const VerifyEmailPage = lazyPage(() => import('./VerifyEmailPage'), 'VerifyEmailPage');
 
 export const authRoutes: RouteObject[] = [
   {

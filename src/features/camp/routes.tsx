@@ -1,10 +1,12 @@
 import type { RouteObject } from 'react-router-dom';
 import { DashboardLayout, type NavItem } from '../../layouts/DashboardLayout';
 import { RequireRole } from '../auth/RequireRole';
-import { NotificationsPage } from '../notifications/NotificationsPage';
-import { CampHome } from './CampHome';
-import { CampDeliveriesPage } from './DeliveriesPage';
-import { SnapshotsPage } from './SnapshotsPage';
+import { lazyPage } from '../../lib/lazyPage';
+
+const NotificationsPage = lazyPage(() => import('../notifications/NotificationsPage'), 'NotificationsPage');
+const CampHome = lazyPage(() => import('./CampHome'), 'CampHome');
+const CampDeliveriesPage = lazyPage(() => import('./DeliveriesPage'), 'CampDeliveriesPage');
+const SnapshotsPage = lazyPage(() => import('./SnapshotsPage'), 'SnapshotsPage');
 
 const nav: NavItem[] = [
   { to: '/camp', label: 'الرئيسية', end: true },
