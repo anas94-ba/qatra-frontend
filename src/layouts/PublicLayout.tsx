@@ -3,6 +3,7 @@ import { PageLoader } from '../components/State';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { homeFor, useAuth } from '../features/auth/AuthContext';
 import { ButtonLink } from '../components/Button';
+import { SiteFooter } from '../components/SiteFooter';
 
 export function Brand({ to = '/' }: { to?: string }) {
   return (
@@ -33,13 +34,7 @@ export function PublicLayout() {
         </div>
       </header>
       <main><Suspense fallback={<PageLoader inline />}><Outlet /></Suspense></main>
-      <footer className="site-footer">
-        <div className="container">
-          <p style={{ margin: 0 }}>
-            قطرة منصة تنسيقية: التوصيات تعكس البيانات المسجلة فقط، وغياب بيانات المساعدات لا يعني عدم وصول المياه.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
