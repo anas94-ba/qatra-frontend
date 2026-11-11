@@ -13,7 +13,7 @@ export function NotificationBell() {
   });
   const count = data?.count ?? 0;
   return (
-    <Link to="notifications" className="bell btn ghost sm" aria-label={`الإشعارات${count ? `، ${count} غير مقروء` : ''}`}>
+    <Link to="notifications" className="bell btn ghost sm" aria-label={count ? t('الإشعارات، {0} غير مقروء', [count]) : t('الإشعارات')}>
       🔔
       {count > 0 && <span className="count">{count > 99 ? '99+' : count}</span>}
     </Link>

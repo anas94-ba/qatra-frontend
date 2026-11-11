@@ -14,6 +14,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatLiters } from '../../lib/format';
 import { deliveryStatus, entityTypeLabel, ORG_TYPES } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 /** Correction of a disputed delivery: the reason is mandatory and goes to the audit log */
 function CorrectModal({ delivery, onClose, onDone }: { delivery: Delivery; onClose: () => void; onDone: () => void }) {
@@ -29,7 +30,7 @@ function CorrectModal({ delivery, onClose, onDone }: { delivery: Delivery; onClo
     setBusy(true);
     try {
       await api.patch(`/admin/deliveries/${delivery.id}/correct`, { sentLiters: Number(sent), receivedLiters: received === '' ? undefined : Number(received), status: status || undefined, reason });
-      toast.success('صُحّحت الدفعة');
+      toast.success(t("صُحّحت الدفعة"));
       onDone();
       onClose();
     } catch (err) {
@@ -40,18 +41,18 @@ function CorrectModal({ delivery, onClose, onDone }: { delivery: Delivery; onClo
   }
 
   return (
-    <Modal title="تصحيح دفعة" onClose={onClose}>
+    <Modal title={t("تصحيح دفعة")} onClose={onClose}>
       <form onSubmit={submit}>
         <div className="form-grid">
-          <TextField label="المرسل (لتر)" type="number" min={0} value={sent} onChange={(e) => setSent(e.target.value)} />
-          <TextField label="المستلم (لتر)" type="number" min={0} value={received} onChange={(e) => setReceived(e.target.value)} />
+          <TextField label={t("المرسل (لتر)")} type="number" min={0} value={sent} onChange={(e) => setSent(e.target.value)} />
+          <TextField label={t("المستلم (لتر)")} type="number" min={0} value={received} onChange={(e) => setReceived(e.target.value)} />
         </div>
-        <SelectField label="الحالة" value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">بدون تغيير</option>
+        <SelectField label={t("الحالة")} value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">{t("بدون تغيير")}</option>
           {(['CONFIRMED', 'CONFIRMED_DIFF', 'REJECTED', 'CANCELLED'] as const).map((s) => <option key={s} value={s}>{deliveryStatus(s).text}</option>)}
         </SelectField>
-        <TextArea label="سبب التصحيح" required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />
-        <div className="row"><Button type="submit" loading={busy}>حفظ</Button><Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button></div>
+        <TextArea label={t("سبب التصحيح")} required minLength={3} value={reason} onChange={(e) => setReason(e.target.value)} />
+        <div className="row"><Button type="submit" loading={busy}>{t("حفظ")}</Button><Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button></div>
       </form>
     </Modal>
   );
@@ -71,33 +72,33 @@ export function AdminDeliveriesPage() {
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin'] });
 
   async function resolveFrozen(d: Delivery, action: 'CANCEL' | 'KEEP') {
-    try { await api.post(`/admin/deliveries/${d.id}/resolve-frozen`, { action }); toast.success(action === 'CANCEL' ? 'أُلغيت الدفعة' : 'بقيت مجمّدة'); refresh(); } catch (e) { toast.error(e); }
+    try { await api.post(`/admin/deliveries/${d.id}/resolve-frozen`, { action }); toast.success(action === 'CANCEL' ? t("أُلغيت الدفعة") : t("بقيت مجمّدة")); refresh(); } catch (e) { toast.error(e); }
   }
 
   return (
     <div className="stack">
-      <PageHeader title="كل الدفعات" subtitle="المتنازع عليها هي المرفوضة والمؤكدة بفرق" />
+      <PageHeader title={t("كل الدفعات")} subtitle={t("المتنازع عليها هي المرفوضة والمؤكدة بفرق")} />
       <Card>
         <div className="form-grid">
-          <SelectField label="نوع الجهة المرسلة" value={orgType} onChange={(e) => { setOrgType(e.target.value); reset(); }}>
-            <option value="">الكل</option>{ORG_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          <SelectField label={t("نوع الجهة المرسلة")} value={orgType} onChange={(e) => { setOrgType(e.target.value); reset(); }}>
+            <option value="">{t("الكل")}</option>{ORG_TYPES.map((o) => <option key={o.value} value={o.value}>{t(o.label)}</option>)}
           </SelectField>
-          <label className="checkbox" style={{ alignSelf: 'end' }}><input type="checkbox" checked={disputed} onChange={(e) => { setDisputed(e.target.checked); reset(); }} /><span>المتنازع عليها فقط</span></label>
+          <label className="checkbox" style={{ alignSelf: 'end' }}><input type="checkbox" checked={disputed} onChange={(e) => { setDisputed(e.target.checked); reset(); }} /><span>{t("المتنازع عليها فقط")}</span></label>
         </div>
         <QueryState loading={query.isLoading} error={query.error}>
           {query.data && (
             <>
               <DataTable rows={query.data.items} rowKey={(d) => d.id} columns={[
-                { header: 'التاريخ', render: (d) => formatDate(d.sentAt) },
-                { header: 'من', render: (d) => <>{d.from.name}<div className="small muted">{entityTypeLabel(d.from.orgType)}</div></> },
-                { header: 'إلى', render: (d) => d.to.name },
-                { header: 'المرسل / المستلم', render: (d) => `${formatLiters(d.sentLiters)} / ${formatLiters(d.receivedLiters)}` },
-                { header: 'الحالة', render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div><span className="badge warn">مجمّدة</span></div>}{d.decisionNote && <div className="small muted">{d.decisionNote}</div>}</> },
+                { header: t("التاريخ"), render: (d) => formatDate(d.sentAt) },
+                { header: t("من"), render: (d) => <>{d.from.name}<div className="small muted">{entityTypeLabel(d.from.orgType)}</div></> },
+                { header: t("إلى"), render: (d) => d.to.name },
+                { header: t("المرسل / المستلم"), render: (d) => `${formatLiters(d.sentLiters)} / ${formatLiters(d.receivedLiters)}` },
+                { header: t("الحالة"), render: (d) => <><Badge label={deliveryStatus(d.status)} />{d.frozen && <div><span className="badge warn">{t("مجمّدة")}</span></div>}{d.decisionNote && <div className="small muted">{d.decisionNote}</div>}</> },
                 {
                   header: '',
                   render: (d) => d.frozen ? (
-                    <div className="row"><Button small variant="danger" onClick={() => resolveFrozen(d, 'CANCEL')}>إلغاء</Button><Button small variant="secondary" onClick={() => resolveFrozen(d, 'KEEP')}>إبقاء</Button></div>
-                  ) : <Button small variant="secondary" onClick={() => setCorrecting(d)}>تصحيح</Button>,
+                    <div className="row"><Button small variant="danger" onClick={() => resolveFrozen(d, 'CANCEL')}>{t("إلغاء")}</Button><Button small variant="secondary" onClick={() => resolveFrozen(d, 'KEEP')}>{t("إبقاء")}</Button></div>
+                  ) : <Button small variant="secondary" onClick={() => setCorrecting(d)}>{t("تصحيح")}</Button>,
                 },
               ]} />
               <Pagination meta={query.data.meta} onPage={setPage} />

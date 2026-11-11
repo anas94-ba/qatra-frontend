@@ -12,6 +12,7 @@ import { Badge } from '../../components/Badge';
 import { landingPath, useAuth } from './AuthContext';
 import { ResendVerification } from './ResendVerification';
 import { EntityFields, toPayload, valuesFromRequest, type EntityValues } from './registrationForm';
+import { t } from '../../i18n';
 
 /** Shared "refresh status" + sign-out actions for every status page */
 function StatusActions() {
@@ -28,8 +29,8 @@ function StatusActions() {
 
   return (
     <div className="row" style={{ marginTop: '1rem' }}>
-      <Button loading={busy} onClick={refresh}>تحديث الحالة</Button>
-      <Button variant="secondary" onClick={() => logout().then(() => navigate('/login'))}>تسجيل الخروج</Button>
+      <Button loading={busy} onClick={refresh}>{t("تحديث الحالة")}</Button>
+      <Button variant="secondary" onClick={() => logout().then(() => navigate('/login'))}>{t("تسجيل الخروج")}</Button>
     </div>
   );
 }
@@ -39,8 +40,8 @@ export function VerifyStatusPage() {
   const { session } = useAuth();
   return (
     <div>
-      <h1>أكّد بريدك الإلكتروني</h1>
-      <p>أرسلنا رابط التأكيد إلى بريدك. بعد التأكيد يدخل طلبك قائمة مراجعة الأدمن.</p>
+      <h1>{t("أكّد بريدك الإلكتروني")}</h1>
+      <p>{t("أرسلنا رابط التأكيد إلى بريدك. بعد التأكيد يدخل طلبك قائمة مراجعة الأدمن.")}</p>
       <ResendVerification email={session?.user.email ?? ''} />
       <StatusActions />
     </div>
@@ -53,18 +54,18 @@ export function PendingStatusPage() {
   const r = query.data;
   return (
     <div>
-      <h1>طلبك قيد الاعتماد</h1>
+      <h1>{t("طلبك قيد الاعتماد")}</h1>
       <QueryState loading={query.isLoading} error={query.error}>
         {r && (
           <dl className="stack small">
-            <div><strong>الجهة:</strong> {r.name} ({entityTypeLabel(r.entityType)})</div>
-            <div><strong>الحالة:</strong> <Badge label={requestStatus(r.status)} /></div>
-            <div><strong>تاريخ التقديم:</strong> {formatDate(r.createdAt)}</div>
-            <div><strong>المسؤول:</strong> {r.contactName} — <span className="ltr">{r.phone}</span></div>
+            <div><strong>{t("الجهة:")}</strong> {r.name} ({entityTypeLabel(r.entityType)})</div>
+            <div><strong>{t("الحالة:")}</strong> <Badge label={requestStatus(r.status)} /></div>
+            <div><strong>{t("تاريخ التقديم:")}</strong> {formatDate(r.createdAt)}</div>
+            <div><strong>{t("المسؤول:")}</strong> {r.contactName} — <span className="ltr">{r.phone}</span></div>
           </dl>
         )}
       </QueryState>
-      <p className="muted small">ستصلك رسالة بريدية عند اتخاذ القرار. يمكنك الضغط على «تحديث الحالة» للتحقق.</p>
+      <p className="muted small">{t("ستصلك رسالة بريدية عند اتخاذ القرار. يمكنك الضغط على «تحديث الحالة» للتحقق.")}</p>
       <StatusActions />
     </div>
   );
@@ -88,7 +89,7 @@ export function RejectedStatusPage() {
     setBusy(true);
     try {
       await api.put('/registration/me', toPayload(r.entityType, form));
-      toast.success('أُعيد تقديم الطلب');
+      toast.success(t("أُعيد تقديم الطلب"));
       await queryClient.invalidateQueries({ queryKey: ['registration'] });
       const s = await reload();
       if (s) navigate(landingPath(s), { replace: true });
@@ -101,20 +102,20 @@ export function RejectedStatusPage() {
 
   return (
     <div className="stack">
-      <h1>تعذّر قبول طلبك</h1>
+      <h1>{t("تعذّر قبول طلبك")}</h1>
       <QueryState loading={query.isLoading} error={query.error}>
         {r && (
           <>
-            <div className="notice danger"><strong>السبب:</strong> {r.rejectionReason}</div>
-            <p className="small muted">المحاولات المتبقية: {r.attemptsRemaining ?? 0}</p>
+            <div className="notice danger"><strong>{t("السبب:")}</strong> {r.rejectionReason}</div>
+            <p className="small muted">{t("المحاولات المتبقية: {0}", [r.attemptsRemaining ?? 0])}</p>
             {r.canResubmit && form ? (
               <form onSubmit={resubmit}>
-                <h2>عدّل بياناتك وأعد التقديم</h2>
+                <h2>{t("عدّل بياناتك وأعد التقديم")}</h2>
                 <EntityFields type={r.entityType} values={form} onChange={(patch) => setValues({ ...form, ...patch })} />
-                <Button type="submit" loading={busy}>إعادة التقديم</Button>
+                <Button type="submit" loading={busy}>{t("إعادة التقديم")}</Button>
               </form>
             ) : (
-              <div className="notice">استُنفدت محاولات إعادة التقديم. للتواصل مع فريق المنصة يرجى مراسلتهم عبر القنوات الرسمية.</div>
+              <div className="notice">{t("استُنفدت محاولات إعادة التقديم. للتواصل مع فريق المنصة يرجى مراسلتهم عبر القنوات الرسمية.")}</div>
             )}
           </>
         )}
@@ -130,8 +131,8 @@ export function SuspendedStatusPage() {
   const reason = session?.landingData?.reason as string | null | undefined;
   return (
     <div>
-      <h1>الحساب موقوف</h1>
-      <div className="notice danger">{reason ? <><strong>السبب:</strong> {reason}</> : 'تم توقيف جهتك مؤقتًا.'}</div>
+      <h1>{t("الحساب موقوف")}</h1>
+      <div className="notice danger">{reason ? <><strong>{t("السبب:")}</strong> {reason}</> : t("تم توقيف جهتك مؤقتًا.")}</div>
       <StatusActions />
     </div>
   );

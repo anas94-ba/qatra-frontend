@@ -9,6 +9,7 @@ import { useToast } from '../../components/Toast';
 import { formatDateTime } from '../../lib/format';
 import { usePage } from '../../lib/usePage';
 import { useState } from 'react';
+import { t } from '../../i18n';
 
 /** Shared by the camp, organization and admin dashboards */
 export function NotificationsPage() {
@@ -27,11 +28,11 @@ export function NotificationsPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="الإشعارات"
+        title={t("الإشعارات")}
         actions={
           <div className="row">
-            <label className="row small"><input type="checkbox" checked={unread} onChange={(e) => { setUnread(e.target.checked); reset(); }} /> غير المقروءة فقط</label>
-            <Button variant="secondary" small onClick={() => markAll.mutate()}>تعليم الكل كمقروء</Button>
+            <label className="row small"><input type="checkbox" checked={unread} onChange={(e) => { setUnread(e.target.checked); reset(); }} /> {t("غير المقروءة فقط")}</label>
+            <Button variant="secondary" small onClick={() => markAll.mutate()}>{t("تعليم الكل كمقروء")}</Button>
           </div>
         }
       />
@@ -46,7 +47,7 @@ export function NotificationsPage() {
                     <span className="muted small">{formatDateTime(n.createdAt)}</span>
                   </div>
                   <p style={{ margin: '.25rem 0 0' }}>{n.body}</p>
-                  {!n.readAt && <Button variant="ghost" small onClick={() => markOne.mutate(n.id)}>تعليم كمقروء</Button>}
+                  {!n.readAt && <Button variant="ghost" small onClick={() => markOne.mutate(n.id)}>{t("تعليم كمقروء")}</Button>}
                 </div>
               ))}
             </div>

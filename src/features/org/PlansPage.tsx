@@ -15,6 +15,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatLiters, todayInGaza } from '../../lib/format';
 import { planStatus } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 const WEEKDAYS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -34,34 +35,34 @@ function PlanForm({ onClose }: { onClose: () => void }) {
 
   const create = useMutation({
     mutationFn: () => api.post<Plan>('/org/plans', { name: f.name, dailyLiters: Number(f.dailyLiters), startDate: f.startDate, endDate: f.endDate, campIds: selected, distributionDays: days }),
-    onSuccess: () => { toast.success('أُنشئت الخطة'); qc.invalidateQueries({ queryKey: ['org'] }); onClose(); },
+    onSuccess: () => { toast.success(t("أُنشئت الخطة")); qc.invalidateQueries({ queryKey: ['org'] }); onClose(); },
     onError: toast.error,
   });
 
   function submit(e: FormEvent) {
     e.preventDefault();
-    if (!selected.length) return toast.error(new Error('اختر مخيمًا واحدًا على الأقل'));
+    if (!selected.length) return toast.error(new Error(t("اختر مخيمًا واحدًا على الأقل")));
     create.mutate();
   }
 
   return (
-    <Modal title="خطة مياه جديدة" onClose={onClose}>
+    <Modal title={t("خطة مياه جديدة")} onClose={onClose}>
       <form onSubmit={submit}>
-        <TextField label="اسم الخطة" required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
-        <TextField label="الكمية اليومية (لتر)" type="number" min={1} required value={f.dailyLiters} onChange={(e) => setF({ ...f, dailyLiters: e.target.value })} />
+        <TextField label={t("اسم الخطة")} required value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
+        <TextField label={t("الكمية اليومية (لتر)")} type="number" min={1} required value={f.dailyLiters} onChange={(e) => setF({ ...f, dailyLiters: e.target.value })} />
         <div className="form-grid">
-          <TextField label="تاريخ البداية" type="date" min={today} required value={f.startDate} onChange={(e) => setF({ ...f, startDate: e.target.value })} hint="اليوم أو بعده (بتوقيت فلسطين)" />
-          <TextField label="تاريخ النهاية" type="date" min={f.startDate} required value={f.endDate} onChange={(e) => setF({ ...f, endDate: e.target.value })} />
+          <TextField label={t("تاريخ البداية")} type="date" min={today} required value={f.startDate} onChange={(e) => setF({ ...f, startDate: e.target.value })} hint={t("اليوم أو بعده (بتوقيت فلسطين)")} />
+          <TextField label={t("تاريخ النهاية")} type="date" min={f.startDate} required value={f.endDate} onChange={(e) => setF({ ...f, endDate: e.target.value })} />
         </div>
         <fieldset style={{ border: 0, padding: 0, margin: '0 0 .9rem' }}>
-          <legend className="small" style={{ fontWeight: 600 }}>أيام التوزيع</legend>
+          <legend className="small" style={{ fontWeight: 600 }}>{t("أيام التوزيع")}</legend>
           <div className="row">
             {WEEKDAYS.map((d, i) => (
-              <label key={d} className="row small"><input type="checkbox" checked={days.includes(i)} onChange={() => setDays(toggle(days, i))} />{d}</label>
+              <label key={d} className="row small"><input type="checkbox" checked={days.includes(i)} onChange={() => setDays(toggle(days, i))} />{t(d)}</label>
             ))}
           </div>
         </fieldset>
-        <TextField label="المخيمات المستهدفة" placeholder="بحث بالاسم" value={q} onChange={(e) => setQ(e.target.value)} />
+        <TextField label={t("المخيمات المستهدفة")} placeholder={t("بحث بالاسم")} value={q} onChange={(e) => setQ(e.target.value)} />
         <div style={{ maxHeight: 180, overflow: 'auto', marginBottom: '.9rem' }}>
           <QueryState loading={camps.isLoading} error={camps.error} empty={camps.data?.items.length === 0}>
             {camps.data?.items.map((c) => (
@@ -72,10 +73,10 @@ function PlanForm({ onClose }: { onClose: () => void }) {
             ))}
           </QueryState>
         </div>
-        <p className="small muted">المحدّد: {selected.length} مخيم</p>
+        <p className="small muted">{t("المحدّد: {0} مخيم", [selected.length])}</p>
         <div className="row">
-          <Button type="submit" loading={create.isPending}>إنشاء</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="submit" loading={create.isPending}>{t("إنشاء")}</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>
@@ -89,7 +90,7 @@ export function PlansPage() {
 
   return (
     <div className="stack">
-      <PageHeader title="خطط المياه" actions={<Button onClick={() => setOpen(true)}>خطة جديدة</Button>} />
+      <PageHeader title={t("خطط المياه")} actions={<Button onClick={() => setOpen(true)}>{t("خطة جديدة")}</Button>} />
       <Card>
         <QueryState loading={query.isLoading} error={query.error}>
           {query.data && (
@@ -98,11 +99,11 @@ export function PlansPage() {
                 rows={query.data.items}
                 rowKey={(p) => p.id}
                 columns={[
-                  { header: 'الخطة', render: (p) => <Link to={p.id}>{p.name}</Link> },
-                  { header: 'الكمية اليومية', render: (p) => formatLiters(p.dailyLiters) },
-                  { header: 'الفترة', render: (p) => `${formatDate(p.startDate)} ← ${formatDate(p.endDate)}` },
-                  { header: 'المخيمات', render: (p) => p._count?.planCamps ?? 0 },
-                  { header: 'الحالة', render: (p) => <Badge label={planStatus(p.status)} /> },
+                  { header: t("الخطة"), render: (p) => <Link to={p.id}>{p.name}</Link> },
+                  { header: t("الكمية اليومية"), render: (p) => formatLiters(p.dailyLiters) },
+                  { header: t("الفترة"), render: (p) => `${formatDate(p.startDate)} ← ${formatDate(p.endDate)}` },
+                  { header: t("المخيمات"), render: (p) => p._count?.planCamps ?? 0 },
+                  { header: t("الحالة"), render: (p) => <Badge label={planStatus(p.status)} /> },
                 ]}
               />
               <Pagination meta={query.data.meta} onPage={setPage} />

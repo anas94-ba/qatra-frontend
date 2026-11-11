@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { t } from '../../i18n';
 
 /**
  * Put your photo at  public/images/hero.jpg  (see public/images/README.md).
@@ -15,7 +16,7 @@ export function HeroImage() {
     <figure className={`hero-figure ${loaded ? 'loaded' : ''}`}>
       <img
         src={src}
-        alt="أشخاص ينتظرون في طابور لتعبئة حاويات مياه الشرب"
+        alt={t("أشخاص ينتظرون في طابور لتعبئة حاويات مياه الشرب")}
         width={1280}
         height={800}
         decoding="async"
@@ -23,7 +24,7 @@ export function HeroImage() {
         onLoad={() => setLoaded(true)}
         onError={() => (src === HERO_IMAGE ? setSrc(HERO_FALLBACK) : setLoaded(true))}
       />
-      <figcaption>كل قطرة يجب أن تصل إلى من يحتاجها أولًا</figcaption>
+      <figcaption>{t("كل قطرة يجب أن تصل إلى من يحتاجها أولًا")}</figcaption>
     </figure>
   );
 }

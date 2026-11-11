@@ -8,6 +8,7 @@ import { Empty, ErrorNotice, Spinner } from '../../components/State';
 import { currentMonth, formatDateTime, formatLiters, formatNumber } from '../../lib/format';
 import { DonorStrip } from './DonorStrip';
 import { HeroImage } from './HeroImage';
+import { t } from '../../i18n';
 
 const PublicMap = lazy(() => import('./PublicMap'));
 
@@ -22,11 +23,11 @@ export function HomePage() {
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-copy stack">
-            <h1>قطرة: توزيع المياه بحسب الاحتياج</h1>
-            <p>منصة تنسّق توزيع مياه الشرب المفلترة على مخيمات غزة. تقترح الخوارزمية، وتقرّر المؤسسة، ويؤكد مدير المخيم الاستلام.</p>
+            <h1>{t("قطرة: توزيع المياه بحسب الاحتياج")}</h1>
+            <p>{t("منصة تنسّق توزيع مياه الشرب المفلترة على مخيمات غزة. تقترح الخوارزمية، وتقرّر المؤسسة، ويؤكد مدير المخيم الاستلام.")}</p>
             <div className="row">
-              <ButtonLink to="/register" variant="secondary">سجّل جهتك</ButtonLink>
-              <ButtonLink to="/donate">تبرّع</ButtonLink>
+              <ButtonLink to="/register" variant="secondary">{t("سجّل جهتك")}</ButtonLink>
+              <ButtonLink to="/donate">{t("تبرّع")}</ButtonLink>
             </div>
           </div>
           <HeroImage />
@@ -36,33 +37,33 @@ export function HomePage() {
       <div className="container stack" style={{ marginTop: '1.5rem' }}>
         {stats.error ? <ErrorNotice error={stats.error} /> : (
           <div className="grid cols-3">
-            <Stat label="مخيمات مسجّلة" value={formatNumber(s?.camps)} />
-            <Stat label="مؤسسات ومبادرات" value={formatNumber(s?.organizations.total)} />
-            <Stat label="مياه مؤكدة الاستلام" value={formatLiters(s?.confirmedLiters)} />
-            <Stat label="قيد التأكيد" value={formatLiters(s?.pendingLiters)} />
+            <Stat label={t("مخيمات مسجّلة")} value={formatNumber(s?.camps)} />
+            <Stat label={t("مؤسسات ومبادرات")} value={formatNumber(s?.organizations.total)} />
+            <Stat label={t("مياه مؤكدة الاستلام")} value={formatLiters(s?.confirmedLiters)} />
+            <Stat label={t("قيد التأكيد")} value={formatLiters(s?.pendingLiters)} />
           </div>
         )}
         {s && (
           <p className="muted small">
-            محلية: {s.organizations.byType.LOCAL_ORG} • دولية: {s.organizations.byType.INTERNATIONAL_ORG} • مبادرات: {s.organizations.byType.INITIATIVE}
-            {s.lastUpdate && <> • آخر تحديث {formatDateTime(s.lastUpdate)}</>}
+            {t('محلية: {0} • دولية: {1} • مبادرات: {2}', [s.organizations.byType.LOCAL_ORG, s.organizations.byType.INTERNATIONAL_ORG, s.organizations.byType.INITIATIVE])}
+            {s.lastUpdate && <> {t("• آخر تحديث {0}", [formatDateTime(s.lastUpdate)])}</>}
           </p>
         )}
 
         <Card
-          title="خريطة التوزيع"
-          actions={<label className="row small">الشهر <input type="month" value={month} onChange={(e) => e.target.value && setMonth(e.target.value)} /></label>}
+          title={t("خريطة التوزيع")}
+          actions={<label className="row small">{t("الشهر")} <input type="month" value={month} onChange={(e) => e.target.value && setMonth(e.target.value)} /></label>}
         >
           <div className="legend" style={{ marginBottom: '.75rem' }}>
-            <span><i className="dot" style={{ background: '#138a52' }} />مؤكد</span>
-            <span><i className="dot" style={{ background: '#d98a00' }} />قيد التأكيد</span>
-            <span><i className="dot" style={{ background: '#0b63b5' }} />مخطط</span>
+            <span><i className="dot" style={{ background: '#138a52' }} />{t("مؤكد")}</span>
+            <span><i className="dot" style={{ background: '#d98a00' }} />{t("قيد التأكيد")}</span>
+            <span><i className="dot" style={{ background: '#0b63b5' }} />{t("مخطط")}</span>
           </div>
           {map.isLoading ? <Spinner /> : map.error ? <ErrorNotice error={map.error} /> : map.data?.camps.length ? (
             <Suspense fallback={<Spinner />}><PublicMap camps={map.data.camps} /></Suspense>
-          ) : <Empty>لا توجد مخيمات منشورة على الخريطة بعد</Empty>}
+          ) : <Empty>{t("لا توجد مخيمات منشورة على الخريطة بعد")}</Empty>}
           <p className="muted small" style={{ marginTop: '.75rem' }}>
-            الأرقام العامة تفصل «المؤكد» عن «قيد التأكيد»، والإحداثيات مقرّبة لحماية المواقع.
+            {t("الأرقام العامة تفصل «المؤكد» عن «قيد التأكيد»، والإحداثيات مقرّبة لحماية المواقع.")}
           </p>
         </Card>
 

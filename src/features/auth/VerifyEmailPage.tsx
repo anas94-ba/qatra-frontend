@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../../api/client';
 import { Spinner } from '../../components/State';
+import { t } from '../../i18n';
 
 type State = { kind: 'loading' } | { kind: 'ok'; message: string } | { kind: 'error'; message: string };
 
 /** Opened from the email link: /verify-email?token=... */
 export function VerifyEmailPage() {
   const token = useSearchParams()[0].get('token');
-  const [state, setState] = useState<State>(token ? { kind: 'loading' } : { kind: 'error', message: 'الرابط غير صالح' });
+  const [state, setState] = useState<State>(token ? { kind: 'loading' } : { kind: 'error', message: t("الرابط غير صالح") });
   // The token is single-use, so guard against React StrictMode running the effect twice
   const sent = useRef(false);
 
@@ -23,9 +24,9 @@ export function VerifyEmailPage() {
   if (state.kind === 'loading') return <Spinner />;
   return (
     <div className="stack">
-      <h1>تأكيد البريد الإلكتروني</h1>
+      <h1>{t("تأكيد البريد الإلكتروني")}</h1>
       <div className={`notice ${state.kind === 'ok' ? 'ok' : 'danger'}`}>{state.message}</div>
-      <Link to="/login">تسجيل الدخول</Link>
+      <Link to="/login">{t("تسجيل الدخول")}</Link>
     </div>
   );
 }

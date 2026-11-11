@@ -1,6 +1,7 @@
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { Button } from './Button';
 import { TextArea } from './Field';
+import { t } from '../i18n';
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   const titleId = useId();
@@ -30,7 +31,7 @@ interface ReasonProps {
 }
 
 /** Dialog that asks for a free-text reason (rejections, suspensions, corrections) */
-export function ReasonModal({ title, label = 'السبب', submitLabel, required = true, danger, onClose, onSubmit }: ReasonProps) {
+export function ReasonModal({ title, label = t("السبب"), submitLabel, required = true, danger, onClose, onSubmit }: ReasonProps) {
   const [reason, setReason] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -51,7 +52,7 @@ export function ReasonModal({ title, label = 'السبب', submitLabel, required
         <TextArea label={label} value={reason} onChange={(e) => setReason(e.target.value)} required={required} minLength={required ? 3 : undefined} autoFocus />
         <div className="row">
           <Button type="submit" variant={danger ? 'danger' : 'primary'} loading={busy}>{submitLabel}</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>

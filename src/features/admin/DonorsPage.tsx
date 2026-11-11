@@ -13,6 +13,7 @@ import { QueryState } from '../../components/State';
 import { useToast } from '../../components/Toast';
 import { formatDate } from '../../lib/format';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 function DonorForm({ onClose }: { onClose: () => void }) {
   const toast = useToast();
@@ -30,7 +31,7 @@ function DonorForm({ onClose }: { onClose: () => void }) {
       form.append('image', file);
       Object.entries(f).forEach(([k, val]) => form.append(k, k === 'consentGivenAt' ? new Date(val).toISOString() : val));
       await api.upload('/admin/donors', form);
-      toast.success('أُضيف المانح (غير منشور)');
+      toast.success(t("أُضيف المانح (غير منشور)"));
       qc.invalidateQueries({ queryKey: ['admin', 'donors'] });
       onClose();
     } catch (err) {
@@ -41,16 +42,16 @@ function DonorForm({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Modal title="إضافة مانح" onClose={onClose}>
+    <Modal title={t("إضافة مانح")} onClose={onClose}>
       <form onSubmit={submit}>
-        <TextField label="الصورة" type="file" accept="image/jpeg,image/png,image/webp" required onChange={(e) => setFile(e.target.files?.[0] ?? null)} hint="WebP أو JPG أو PNG فقط (بدون SVG)، حتى 2 ميغابايت" />
-        <TextField label="النص البديل (لقارئات الشاشة)" required minLength={3} value={f.altText} onChange={(e) => setF({ ...f, altText: e.target.value })} />
+        <TextField label={t("الصورة")} type="file" accept="image/jpeg,image/png,image/webp" required onChange={(e) => setFile(e.target.files?.[0] ?? null)} hint={t("WebP أو JPG أو PNG فقط (بدون SVG)، حتى 2 ميغابايت")} />
+        <TextField label={t("النص البديل (لقارئات الشاشة)")} required minLength={3} value={f.altText} onChange={(e) => setF({ ...f, altText: e.target.value })} />
         <div className="form-grid">
-          <TextField label="تاريخ الموافقة" type="date" required value={f.consentGivenAt} onChange={(e) => setF({ ...f, consentGivenAt: e.target.value })} />
-          <TextField label="مصدر الموافقة" required value={f.consentSource} onChange={(e) => setF({ ...f, consentSource: e.target.value })} hint="مثال: رسالة بريدية بتاريخ ..." />
+          <TextField label={t("تاريخ الموافقة")} type="date" required value={f.consentGivenAt} onChange={(e) => setF({ ...f, consentGivenAt: e.target.value })} />
+          <TextField label={t("مصدر الموافقة")} required value={f.consentSource} onChange={(e) => setF({ ...f, consentSource: e.target.value })} hint={t("مثال: رسالة بريدية بتاريخ ...")} />
         </div>
-        <TextField label="الترتيب" type="number" value={f.displayOrder} onChange={(e) => setF({ ...f, displayOrder: e.target.value })} />
-        <div className="row"><Button type="submit" loading={busy}>إضافة</Button><Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button></div>
+        <TextField label={t("الترتيب")} type="number" value={f.displayOrder} onChange={(e) => setF({ ...f, displayOrder: e.target.value })} />
+        <div className="row"><Button type="submit" loading={busy}>{t("إضافة")}</Button><Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button></div>
       </form>
     </Modal>
   );
@@ -64,22 +65,22 @@ export function DonorsPage() {
   const query = useQuery({ queryKey: ['admin', 'donors', page], queryFn: () => api.get<Paginated<Donor>>('/admin/donors', { page }) });
   const refresh = () => qc.invalidateQueries({ queryKey: ['admin', 'donors'] });
   const toggle = useMutation({ mutationFn: (d: Donor) => api.patch(`/admin/donors/${d.id}`, { isPublished: !d.isPublished }), onSuccess: refresh, onError: toast.error });
-  const remove = useMutation({ mutationFn: (d: Donor) => api.del(`/admin/donors/${d.id}`), onSuccess: () => { toast.success('حُذف المانح'); refresh(); }, onError: toast.error });
+  const remove = useMutation({ mutationFn: (d: Donor) => api.del(`/admin/donors/${d.id}`), onSuccess: () => { toast.success(t("حُذف المانح")); refresh(); }, onError: toast.error });
 
   return (
     <div className="stack">
-      <PageHeader title="المانحون" subtitle="لا تُنشر صورة مانح بدون موافقة مسجّلة" actions={<Button onClick={() => setAdding(true)}>إضافة مانح</Button>} />
+      <PageHeader title={t("المانحون")} subtitle={t("لا تُنشر صورة مانح بدون موافقة مسجّلة")} actions={<Button onClick={() => setAdding(true)}>{t("إضافة مانح")}</Button>} />
       <Card>
         <QueryState loading={query.isLoading} error={query.error}>
           {query.data && (
             <>
               <DataTable rows={query.data.items} rowKey={(d) => d.id} columns={[
-                { header: 'الصورة', render: (d) => <img src={d.imageUrl} alt={d.altText} style={{ height: 48, width: 48, objectFit: 'contain' }} /> },
-                { header: 'النص البديل', render: (d) => d.altText },
-                { header: 'الموافقة', render: (d) => <>{formatDate(d.consentGivenAt)}<div className="small muted">{d.consentSource}</div></> },
-                { header: 'الترتيب', render: (d) => d.displayOrder },
-                { header: 'النشر', render: (d) => <Badge label={d.isPublished ? { text: 'منشور', tone: 'ok' } : { text: 'مخفي', tone: '' }} /> },
-                { header: '', render: (d) => <div className="row"><Button small variant="secondary" onClick={() => toggle.mutate(d)}>{d.isPublished ? 'إخفاء' : 'نشر'}</Button><Button small variant="danger" onClick={() => remove.mutate(d)}>حذف</Button></div> },
+                { header: t("الصورة"), render: (d) => <img src={d.imageUrl} alt={d.altText} style={{ height: 48, width: 48, objectFit: 'contain' }} /> },
+                { header: t("النص البديل"), render: (d) => d.altText },
+                { header: t("الموافقة"), render: (d) => <>{formatDate(d.consentGivenAt)}<div className="small muted">{d.consentSource}</div></> },
+                { header: t("الترتيب"), render: (d) => d.displayOrder },
+                { header: t("النشر"), render: (d) => <Badge label={d.isPublished ? { text: t("منشور"), tone: 'ok' } : { text: t("مخفي"), tone: '' }} /> },
+                { header: '', render: (d) => <div className="row"><Button small variant="secondaryt(" onClick={() => toggle.mutate(d)}>{d.isPublished ? 'إخفاء' : 'نشر'}</Button><Button small variant=")danger" onClick={() => remove.mutate(d)}>{t("حذف")}</Button></div> },
               ]} />
               <Pagination meta={query.data.meta} onPage={setPage} />
             </>

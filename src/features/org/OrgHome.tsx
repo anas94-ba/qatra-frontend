@@ -6,6 +6,7 @@ import { Card, PageHeader, Stat } from '../../components/Card';
 import { QueryState } from '../../components/State';
 import { formatNumber } from '../../lib/format';
 import { entityTypeLabel } from '../../lib/labels';
+import { t } from '../../i18n';
 
 export function OrgHome() {
   const org = useQuery({ queryKey: ['org', 'me'], queryFn: () => api.get<Organization>('/org/me') });
@@ -14,17 +15,17 @@ export function OrgHome() {
 
   return (
     <div className="stack">
-      <PageHeader title={org.data?.name ?? 'مؤسستي'} subtitle={org.data ? entityTypeLabel(org.data.orgType) : undefined} />
+      <PageHeader title={org.data?.name ?? t("مؤسستي")} subtitle={org.data ? entityTypeLabel(org.data.orgType) : undefined} />
       <QueryState loading={org.isLoading} error={org.error}>
         <div className="grid cols-3">
-          <Stat label="خطط المياه" value={formatNumber(plans.data?.meta.total ?? 0)} />
-          <Stat label="دفعات بانتظار رد المخيمات" value={formatNumber(pending.data?.meta.total ?? 0)} />
+          <Stat label={t("خطط المياه")} value={formatNumber(plans.data?.meta.total ?? 0)} />
+          <Stat label={t("دفعات بانتظار رد المخيمات")} value={formatNumber(pending.data?.meta.total ?? 0)} />
         </div>
-        <Card title="ابدأ من هنا">
-          <p className="muted">أنشئ خطة مياه، شغّل التوصية، اعتمد الكميات أو عدّلها بسبب، ثم سجّل الدفعات ليؤكد المخيم استلامها.</p>
+        <Card title={t("ابدأ من هنا")}>
+          <p className="muted">{t("أنشئ خطة مياه، شغّل التوصية، اعتمد الكميات أو عدّلها بسبب، ثم سجّل الدفعات ليؤكد المخيم استلامها.")}</p>
           <div className="row">
-            <Link className="btn" to="plans">خطط المياه</Link>
-            <Link className="btn secondary" to="deliveries">الدفعات الصادرة</Link>
+            <Link className="btn" to="plans">{t("خطط المياه")}</Link>
+            <Link className="btn secondary" to="deliveries">{t("الدفعات الصادرة")}</Link>
           </div>
         </Card>
       </QueryState>

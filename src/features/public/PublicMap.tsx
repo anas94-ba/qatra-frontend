@@ -2,6 +2,7 @@ import 'leaflet/dist/leaflet.css';
 import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet';
 import type { MapCamp } from '../../api/types';
 import { formatLiters } from '../../lib/format';
+import { t } from '../../i18n';
 
 const GAZA_CENTER: [number, number] = [31.42, 34.38];
 
@@ -25,9 +26,9 @@ export default function PublicMap({ camps }: { camps: MapCamp[] }) {
               <strong>{c.name}</strong>
               <br />{c.region}
               <hr />
-              مخطط: {formatLiters(c.plannedLiters)}<br />
-              مؤكد: {formatLiters(c.confirmedLiters)}<br />
-              قيد التأكيد: {formatLiters(c.pendingLiters)}
+              {t("مخطط: {0}", [formatLiters(c.plannedLiters)])}<br />
+              {t("مؤكد: {0}", [formatLiters(c.confirmedLiters)])}<br />
+              {t("قيد التأكيد: {0}", [formatLiters(c.pendingLiters)])}
             </Popup>
           </CircleMarker>
         ))}

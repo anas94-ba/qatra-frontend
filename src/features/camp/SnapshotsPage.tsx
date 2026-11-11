@@ -14,6 +14,7 @@ import { useToast } from '../../components/Toast';
 import { formatDate, formatNumber } from '../../lib/format';
 import { reviewStatus } from '../../lib/labels';
 import { usePage } from '../../lib/usePage';
+import { t } from '../../i18n';
 
 const emptyForm = { families: '', population: '', children: '', disabled: '', waterReceivedLiters: '', lastDistributionAt: '', source: 'تقرير ميداني', otherSources: '' };
 
@@ -29,28 +30,28 @@ function SnapshotForm({ onClose }: { onClose: () => void }) {
       waterReceivedLiters: Number(f.waterReceivedLiters || 0), reportedAt: new Date().toISOString(), source: f.source,
       lastDistributionAt: f.lastDistributionAt || undefined, otherSources: f.otherSources || undefined,
     }),
-    onSuccess: () => { toast.success('أُرسل الـ Snapshot للمراجعة'); qc.invalidateQueries({ queryKey: ['camp'] }); onClose(); },
+    onSuccess: () => { toast.success(t("أُرسل الـ Snapshot للمراجعة")); qc.invalidateQueries({ queryKey: ['camp'] }); onClose(); },
     onError: toast.error,
   });
 
   function submit(e: FormEvent) { e.preventDefault(); create.mutate(); }
 
   return (
-    <Modal title="Snapshot جديد" onClose={onClose}>
+    <Modal title={t("Snapshot جديد")} onClose={onClose}>
       <form onSubmit={submit}>
         <div className="form-grid">
-          <TextField label="عدد الأسر" type="number" min={0} required value={f.families} onChange={set('families')} />
-          <TextField label="عدد السكان" type="number" min={0} required value={f.population} onChange={set('population')} />
-          <TextField label="الأطفال" type="number" min={0} required value={f.children} onChange={set('children')} />
-          <TextField label="ذوو الإعاقة" type="number" min={0} required value={f.disabled} onChange={set('disabled')} />
-          <TextField label="مياه تصل يوميًا من مصادر أخرى (لتر)" type="number" min={0} value={f.waterReceivedLiters} onChange={set('waterReceivedLiters')} hint="المسلَّم عبر المنصة يُحتسب تلقائيًا من الدفعات المؤكدة" />
-          <TextField label="تاريخ آخر توزيع" type="date" value={f.lastDistributionAt} onChange={set('lastDistributionAt')} />
+          <TextField label={t("عدد الأسر")} type="number" min={0} required value={f.families} onChange={set('families')} />
+          <TextField label={t("عدد السكان")} type="number" min={0} required value={f.population} onChange={set('population')} />
+          <TextField label={t("الأطفال")} type="number" min={0} required value={f.children} onChange={set('children')} />
+          <TextField label={t("ذوو الإعاقة")} type="number" min={0} required value={f.disabled} onChange={set('disabled')} />
+          <TextField label={t("مياه تصل يوميًا من مصادر أخرى (لتر)")} type="number" min={0} value={f.waterReceivedLiters} onChange={set('waterReceivedLiters')} hint={t("المسلَّم عبر المنصة يُحتسب تلقائيًا من الدفعات المؤكدة")} />
+          <TextField label={t("تاريخ آخر توزيع")} type="date" value={f.lastDistributionAt} onChange={set('lastDistributionAt')} />
         </div>
-        <TextField label="مصدر البيانات" required value={f.source} onChange={set('source')} />
-        <TextField label="مصادر أخرى (اختياري)" value={f.otherSources} onChange={set('otherSources')} />
+        <TextField label={t("مصدر البيانات")} required value={f.source} onChange={set('source')} />
+        <TextField label={t("مصادر أخرى (اختياري)")} value={f.otherSources} onChange={set('otherSources')} />
         <div className="row">
-          <Button type="submit" loading={create.isPending}>إرسال للمراجعة</Button>
-          <Button type="button" variant="secondary" onClick={onClose}>إلغاء</Button>
+          <Button type="submit" loading={create.isPending}>{t("إرسال للمراجعة")}</Button>
+          <Button type="button" variant="secondary" onClick={onClose}>{t("إلغاء")}</Button>
         </div>
       </form>
     </Modal>
@@ -64,7 +65,7 @@ export function SnapshotsPage() {
 
   return (
     <div className="stack">
-      <PageHeader title="بيانات المخيم" subtitle="كل Snapshot يُراجعه الأدمن قبل استخدامه في التوصيات" actions={<Button onClick={() => setOpen(true)}>Snapshot جديد</Button>} />
+      <PageHeader title={t("بيانات المخيم")} subtitle={t("كل Snapshot يُراجعه الأدمن قبل استخدامه في التوصيات")} actions={<Button onClick={() => setOpen(true)}>{t("Snapshot جديد")}</Button>} />
       <Card>
         <QueryState loading={query.isLoading} error={query.error}>
           {query.data && (
@@ -73,12 +74,12 @@ export function SnapshotsPage() {
                 rows={query.data.items}
                 rowKey={(s) => s.id}
                 columns={[
-                  { header: 'التاريخ', render: (s) => formatDate(s.reportedAt) },
-                  { header: 'السكان', render: (s) => formatNumber(s.population) },
-                  { header: 'الأسر', render: (s) => formatNumber(s.families) },
-                  { header: 'الأطفال', render: (s) => formatNumber(s.children) },
-                  { header: 'ذوو الإعاقة', render: (s) => formatNumber(s.disabled) },
-                  { header: 'الحالة', render: (s) => <><Badge label={reviewStatus(s.reviewStatus)} />{s.rejectionReason && <div className="small muted">{s.rejectionReason}</div>}</> },
+                  { header: t("التاريخ"), render: (s) => formatDate(s.reportedAt) },
+                  { header: t("السكان"), render: (s) => formatNumber(s.population) },
+                  { header: t("الأسر"), render: (s) => formatNumber(s.families) },
+                  { header: t("الأطفال"), render: (s) => formatNumber(s.children) },
+                  { header: t("ذوو الإعاقة"), render: (s) => formatNumber(s.disabled) },
+                  { header: t("الحالة"), render: (s) => <><Badge label={reviewStatus(s.reviewStatus)} />{s.rejectionReason && <div className="small muted">{s.rejectionReason}</div>}</> },
                 ]}
               />
               <Pagination meta={query.data.meta} onPage={setPage} />
