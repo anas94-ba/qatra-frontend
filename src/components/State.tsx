@@ -3,6 +3,17 @@ import { ApiError } from '../api/client';
 
 export const Spinner = () => <div className="spinner" role="status" aria-label="جارٍ التحميل" />;
 
+/** Full-screen loader (app start, session check, lazy route chunks) so the page is never blank */
+export function PageLoader({ inline }: { inline?: boolean }) {
+  return (
+    <div className={`page-loader ${inline ? 'inline' : ''}`} role="status" aria-live="polite">
+      <img src="/logo.png" alt="" />
+      <div className="spinner" />
+      <span className="muted small">جارٍ التحميل</span>
+    </div>
+  );
+}
+
 export function ErrorNotice({ error }: { error: unknown }) {
   const message = error instanceof ApiError || error instanceof Error ? error.message : 'حدث خطأ غير متوقع';
   return <div className="notice danger" role="alert">{message}</div>;
