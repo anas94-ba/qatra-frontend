@@ -493,6 +493,7 @@ export const en: Record<string, string> = {
   'لا يمكن للمؤسسة تعديل نوعها. يؤكده الأدمن عند القبول.': 'An organization cannot edit its type. The admin confirms it on approval.',
   'كلمة المرور غير صحيحة. إعادة المصادقة مطلوبة لتغيير الرابط.': 'Incorrect password. Re-authentication is required to change the link.',
   'الصورة مطلوبة': 'The image is required',
+  'الصورة تالفة أو غير مدعومة': 'The image is corrupt or not supported',
   'الملف مطلوب': 'The file is required',
   'نوع الملف غير مسموح (jpg/png/webp/pdf فقط)': 'File type not allowed (jpg/png/webp/pdf only)',
   'التحقق من CAPTCHA مطلوب': 'CAPTCHA verification is required',

@@ -13,6 +13,7 @@ import { QueryState } from '../../components/State';
 import { useToast } from '../../components/Toast';
 import { formatDate, formatLiters, todayInGaza } from '../../lib/format';
 import { deliveryStatus } from '../../lib/labels';
+import { prepareImageForUpload } from '../../lib/imageUpload';
 import { usePage } from '../../lib/usePage';
 import { t } from '../../i18n';
 
@@ -44,7 +45,8 @@ function DeliveryForm({ onClose }: { onClose: () => void }) {
     setUploading(true);
     try {
       const form = new FormData();
-      form.append('file', file);
+      // Photos are shrunk and converted to WebP here (weak connections); the server converts again
+      form.append('file', await prepareImageForUpload(file, { maxSize: 1600 }));
       setF((v) => ({ ...v, proofUrl: '' }));
       const { url } = await api.upload<{ url: string }>('/org/uploads/proof', form);
       setF((v) => ({ ...v, proofUrl: url }));
