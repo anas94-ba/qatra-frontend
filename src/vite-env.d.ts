@@ -1,5 +1,15 @@
 /// <reference types="vite/client" />
 
+/** vite-imagetools: `?...&as=srcset` gives a ready-to-use srcset string, `?...&format=webp` a URL */
+declare module '*as=srcset' {
+  const srcset: string;
+  export default srcset;
+}
+declare module '*format=webp' {
+  const src: string;
+  export default src;
+}
+
 interface ImportMetaEnv {
   readonly VITE_API_URL?: string;
   readonly VITE_TURNSTILE_SITE_KEY?: string;

@@ -12,6 +12,7 @@ import { Pagination } from '../../components/Pagination';
 import { QueryState } from '../../components/State';
 import { useToast } from '../../components/Toast';
 import { formatDate } from '../../lib/format';
+import { prepareImageForUpload } from '../../lib/imageUpload';
 import { usePage } from '../../lib/usePage';
 import { t } from '../../i18n';
 
@@ -28,7 +29,7 @@ function DonorForm({ onClose }: { onClose: () => void }) {
     setBusy(true);
     try {
       const form = new FormData();
-      form.append('image', file);
+      form.append('image', await prepareImageForUpload(file, { maxSize: 800 }));
       Object.entries(f).forEach(([k, val]) => form.append(k, k === 'consentGivenAt' ? new Date(val).toISOString() : val));
       await api.upload('/admin/donors', form);
       toast.success(t("أُضيف المانح (غير منشور)"));
@@ -75,7 +76,7 @@ export function DonorsPage() {
           {query.data && (
             <>
               <DataTable rows={query.data.items} rowKey={(d) => d.id} columns={[
-                { header: t("الصورة"), render: (d) => <img src={d.imageUrl} alt={d.altText} style={{ height: 48, width: 48, objectFit: 'contain' }} /> },
+                { header: t("الصورة"), render: (d) => <img src={d.imageUrl} alt={d.altText} width={48} height={48} loading="lazy" decoding="async" style={{ objectFit: 'contain' }} /> },
                 { header: t("النص البديل"), render: (d) => d.altText },
                 { header: t("الموافقة"), render: (d) => <>{formatDate(d.consentGivenAt)}<div className="small muted">{d.consentSource}</div></> },
                 { header: t("الترتيب"), render: (d) => d.displayOrder },

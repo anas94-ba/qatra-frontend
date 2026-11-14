@@ -24,7 +24,7 @@ export function DonorStrip() {
       </div>
       <div className={`donor-strip ${paused ? 'paused' : ''}`}>
         <div className="donor-track" style={animate ? undefined : { animation: 'none', width: 'auto', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {list.map((d, i) => <img key={`${d.order}-${i}`} src={d.imageUrl} alt={d.altText} loading="lazy" />)}
+          {list.map((d, i) => <img key={`${d.order}-${i}`} src={d.imageUrl} alt={d.altText} loading="lazy" decoding="async" width={64} height={64} />)}
         </div>
       </div>
     </section>
