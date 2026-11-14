@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ApiError } from '../api/client';
+import logo from '../assets/images/logo.webp';
 import { t } from '../i18n';
 
 export const Spinner = () => <div className="spinner" role="status" aria-label={t("جارٍ التحميل")} />;
@@ -8,7 +9,7 @@ export const Spinner = () => <div className="spinner" role="status" aria-label={
 export function PageLoader({ inline }: { inline?: boolean }) {
   return (
     <div className={`page-loader ${inline ? 'inline' : ''}`} role="status" aria-live="polite">
-      <img src="/logo.png" alt="" />
+      <img src={logo} alt="" width={54} height={72} />
       <div className="spinner" />
       <span className="muted small">{t("جارٍ التحميل")}</span>
     </div>

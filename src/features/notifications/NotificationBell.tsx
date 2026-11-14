@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client';
+import { t } from '../../i18n';
 
 /** Notifications are polled (no WebSockets): every 3 minutes while the app is open */
 const POLL_MS = 3 * 60 * 1000;

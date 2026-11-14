@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import logo from '../assets/images/logo.webp';
 import { Credit } from '../components/Credit';
 import { LanguageSwitcher } from '../i18n/LanguageSwitcher';
 import { PageLoader } from '../components/State';
@@ -11,7 +12,7 @@ export function AuthLayout() {
     <div className="auth-page">
       <div className="auth-card stack">
         <div className="row" style={{ justifyContent: 'flex-end' }}><LanguageSwitcher /></div>
-        <Link to="/"><img className="logo" src="/logo.png" alt={t("قطرة")} /></Link>
+        <Link to="/"><img className="logo" src={logo} alt={t("قطرة")} width={62} height={84} /></Link>
         <div className="card"><Suspense fallback={<PageLoader inline />}><Outlet /></Suspense></div>
         <Credit />
       </div>

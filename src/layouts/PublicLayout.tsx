@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { PageLoader } from '../components/State';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+import logo from '../assets/images/logo.webp';
 import { homeFor, useAuth } from '../features/auth/AuthContext';
 import { ButtonLink } from '../components/Button';
 import { SiteFooter } from '../components/SiteFooter';
@@ -10,7 +11,7 @@ import { t } from '../i18n';
 export function Brand({ to = '/' }: { to?: string }) {
   return (
     <Link to={to} className="brand" style={{ textDecoration: 'none' }}>
-      <img src="/logo.png" alt="" />
+      <img src={logo} alt="" width={31} height={42} />
       <span>{t("قطرة")}</span>
     </Link>
   );
