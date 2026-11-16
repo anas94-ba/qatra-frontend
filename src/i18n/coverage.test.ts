@@ -7,7 +7,7 @@ const ARABIC = /[\u0600-\u06FF]/;
 const IGNORED = new Set(['تقرير ميداني (وهمي)']);
 
 function sources(dir: string): string[] {
-  return readdirSync(dir).flatMap((name) => {
+  return readdirSync(dir).flatMap((name: string) => {
     const path = join(dir, name);
     if (statSync(path).isDirectory()) return name === 'i18n' ? [] : sources(path);
     return /\.(ts|tsx)$/.test(name) && !/\.(test|spec)\./.test(name) ? [path] : [];

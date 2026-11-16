@@ -65,7 +65,11 @@ export function PlanDetailPage() {
     approve.mutate(payload);
   }
 
-  const setEdit = (r: Recommendation, patch: Partial<Edit>) => setEdits((m) => ({ ...m, [r.id]: { liters: String(r.suggestedLiters), reason: '', ...m[r.id], ...patch } }));
+  const setEdit = (r: Recommendation, patch: Partial<Edit>) =>
+  setEdits((m) => {
+    const base: Edit = m[r.id] ?? { liters: String(r.suggestedLiters), reason: '' };
+    return { ...m, [r.id]: { ...base, ...patch } };
+  });
   const next = plan.data ? NEXT[plan.data.status] : null;
 
   return (

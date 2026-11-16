@@ -71,6 +71,10 @@ src/
 public/         اللوجو والأيقونات
 ```
 
+## Deployment
+
+Deployed on Vercel: https://your-project.vercel.app
+
 ## ملاحظات
 - وجهة المستخدم بعد الدخول (`landing`) يحددها الخادم: `EMAIL_VERIFY | PENDING | REJECTED | DASHBOARD | SUSPENDED`، والواجهة تتبعها فقط. القيود الحقيقية تُفرض في الخادم.
 - كل القوائم مرقّمة (10 عناصر لكل صفحة افتراضيًا).
