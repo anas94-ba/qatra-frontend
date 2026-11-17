@@ -73,7 +73,7 @@ public/         اللوجو والأيقونات
 
 ## Deployment
 
-Deployed on Vercel: https://your-project.vercel.app
+Deployed on Vercel: [Visit Website](https://qatra-frontend.vercel.app/)
 
 ## ملاحظات
 - وجهة المستخدم بعد الدخول (`landing`) يحددها الخادم: `EMAIL_VERIFY | PENDING | REJECTED | DASHBOARD | SUSPENDED`، والواجهة تتبعها فقط. القيود الحقيقية تُفرض في الخادم.
